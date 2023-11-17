@@ -21,7 +21,9 @@ class Controller{
 
             }
             else if($pathElements[3] === 'categories'){
-
+                include_once("CategoryController.php");
+                $categoryController = new CategoryController();
+                $categoryController->invoke($method,$parsed,$pathElements);
             }
             else if($pathElements[3] === 'auth'){
                 include_once("AuthController.php");

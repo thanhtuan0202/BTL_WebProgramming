@@ -14,5 +14,7 @@ function isNumberID($value) {
     }
     return false;
 }
-
+function isValidEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
 ?>

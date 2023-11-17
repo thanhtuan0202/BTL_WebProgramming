@@ -103,5 +103,18 @@ include_once("utils/connect_db.php");
                 return $res;
             }
         }
+
+        public function changeUserInfo($user_id, $fullname, $email, $address, $dob,$phone,$gender){
+            try{
+                $pre_stmt = $this->conn->prepare("update user set fullname = ?,email=?,address=?,dob=?,phone=?,gender=? where id = ?");
+                $pre_stmt->bind_param("sssssss", $fullname,$email,$address,$dob,$phone,$gender,$user_id);
+                $pre_stmt->execute();
+                $res = ["success" => "Thay đổi thông tin thành công!"];
+                return $res;
+            }
+            catch(Exception $e){
+                return ['error' => $e->getMessage()];
+            }
+        }
     }
 ?>

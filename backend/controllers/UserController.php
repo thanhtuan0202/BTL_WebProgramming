@@ -7,7 +7,38 @@ class UserController
     {
         $this->model = new Model();
     }
-    public function pahtNotFound()
+    protected function validate($input)
+    {
+        $error_lst = [];
+        $gender = $input['gender'];
+        if ($gender != "M" && $gender != "F") {
+            $res = ["msg" => "Invalid gender", "error-field" => "gender"];
+            array_push($error_lst, $res);
+        }
+        include_once("utils/utils.php");
+        if (isset($input['address'])) {
+            $res = ["msg" => "Not empty", "error-field" => "address"];
+            array_push($error_lst, $res);
+        }
+        if (isset($input['fullname'])) {
+            $res = ["msg" => "Not empty", "error-field" => "fullname"];
+            array_push($error_lst, $res);
+        }
+        if (!isValidPhoneNumber($input['phone']) || isset($input['phone'])) {
+            $res = ["msg" => "Invalid phone number", "error-field" => "phone"];
+            array_push($error_lst, $res);
+        }
+        if (!isValidDate($input['dob']) || isset($input['dob'])) {
+            $res = ["msg" => "Date must is format YYYY-MM-DD", "error-field" => "dob"];
+            array_push($error_lst, $res);
+        }
+        if (!isValidEmail($input['email']) || isset($input['email'])) {
+            $res = ["msg" => "Email is not a valid format", "error-field" => "email"];
+            array_push($error_lst, $res);
+        }
+        return $error_lst;
+    }
+    protected function pahtNotFound()
     {
         $data = array(
             'statusCode' => '404',
@@ -18,6 +49,7 @@ class UserController
         $json = json_encode($data);
         return $json;
     }
+
     public function invoke($method, $parsed, $path)
     {
         if (isset($path[4])) {
@@ -52,7 +84,18 @@ class UserController
                     }
                 } else if ($method == "PUT") {
                     $input = (array) json_decode(file_get_contents('php://input'), true);
-                    
+                    $error_lst = $this->validate($input);
+                    if (count($error_lst) > 0) {
+                        http_response_code(400);
+                        header('Content-Type: application/json');
+                        $data = array(
+                            'error' => $error_lst
+                        );
+                        $json = json_encode($data);
+                        echo $json;
+                    } else {
+                        $res = $this->model->changeUserInfo($path[4], $input['fullname'], $input['email'], $input['address'], $input['dob'], $input['phone'], $input['gender']);
+                    }
                 } else if ($method == "PATCH") {
                     $input = (array) json_decode(file_get_contents('php://input'), true);
                     $res = $this->model->changeUserPassword($input['current_pass'], $input['new_pass'], $input['confirm_pass'], $path[4]);
@@ -73,9 +116,18 @@ class UserController
                         $json = json_encode($data);
                         echo $json;
                     }
+                } else {
+                    $data = array(
+                        'data' => array('error' => 'Method Not Found')
+                    );
+                    http_response_code(404);
+                    header('Content-Type: application/json');
+                    $json = json_encode($data);
+                    echo $json;
                 }
             }
         } else {
+            echo $this->pahtNotFound();
         }
     }
 }

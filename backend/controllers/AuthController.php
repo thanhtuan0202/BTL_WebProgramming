@@ -62,11 +62,7 @@ class AuthController
             //validate input
             $is_fail = false;
             $gender = $input['gender'];
-            if ($gender == "male") {
-              $gender = "M";
-            } else if ($gender == "female") {
-              $gender = "F";
-            } else {
+            if ($gender != "M" && $gender != "F") {
               $res = ["msg" => "Invalid gender", "error-field" => "gender"];
               $is_fail = true;
               array_push($error_lst, $res);
