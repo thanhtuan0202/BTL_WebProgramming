@@ -54,6 +54,7 @@ class UserController
     {
         if (isset($path[4])) {
             include_once("utils/utils.php");
+            //action with path users/usr_id
             if (!isNumberID($path[4])) {
                 $data = array(
                     'data' => array('error' => 'Invalid number id')
@@ -75,7 +76,7 @@ class UserController
                         echo $json;
                     } else {
                         $data = array(
-                            'data' => $res
+                            'data' => array("user-info" => $res)
                         );
                         http_response_code(200);
                         header('Content-Type: application/json');
@@ -89,12 +90,19 @@ class UserController
                         http_response_code(400);
                         header('Content-Type: application/json');
                         $data = array(
-                            'error' => $error_lst
+                            'data' => array('error' => $error_lst)
                         );
                         $json = json_encode($data);
                         echo $json;
                     } else {
                         $res = $this->model->changeUserInfo($path[4], $input['fullname'], $input['email'], $input['address'], $input['dob'], $input['phone'], $input['gender']);
+                        $data = array(
+                            'data' => $res
+                        );
+                        http_response_code(200);
+                        header('Content-Type: application/json');
+                        $json = json_encode($data);
+                        echo $json;
                     }
                 } else if ($method == "PATCH") {
                     $input = (array) json_decode(file_get_contents('php://input'), true);

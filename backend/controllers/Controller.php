@@ -8,11 +8,15 @@ class Controller{
             if($pathElements[3] === 'users'){
                 include_once("UserController.php");
                 $userController = new UserController();
-                $userController->invoke($method,$parsed,$pathElements);
-                
+                $userController->invoke($method,$parsed,$pathElements);  
             }
             else if($pathElements[3] === 'shoes'){
-
+                // shoes?page=x&limit=y -> shoes/shoe_id  
+                // shoes/category/cate_id?page=x&limit=y
+                
+                include_once("ShoeController.php");
+                $shoeController = new ShoeController();
+                $shoeController->invoke($method,$parsed,$pathElements);                
             }
             else if($pathElements[3] === 'carts'){
 
@@ -29,6 +33,9 @@ class Controller{
                 include_once("AuthController.php");
                 $authController = new AuthController();
                 $authController->invoke($method,$parsed,$pathElements);
+            }
+            else if($pathElements[3] === 'admin'){
+
             }
         }
         else{
