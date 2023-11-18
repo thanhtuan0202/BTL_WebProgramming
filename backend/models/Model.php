@@ -1,6 +1,7 @@
 <?php
 include_once("models/User.php");
 include_once("models/Category.php");
+include_once("models/Shoe.php");
 include_once("utils/connect_db.php");
 class Model
 {
@@ -157,24 +158,75 @@ class Model
 
     public function getAllShoe($page,$limit,$sortby,$type){
         try{
-            $pre_stmt = $this->conn->prepare('SELECT * FROM shoe LIMIT ? OFFSET ? ORDER BY ? ?');
-            $offset = (int)$limit * (int)$page;
-            $pre_stmt->bind_param('iiss',$limit,$offset,$sortby,$type);
+            $query = "SELECT * FROM shoe ORDER BY $sortby $type LIMIT ? OFFSET ?";
+            $pre_stmt = $this->conn->prepare($query);
+            $offset = $limit * $page;
+            $pre_stmt->bind_param("ii",$limit,$offset);
             $pre_stmt->execute();
             $tmp = $pre_stmt->get_result();
-            if ($pre_stmt->num_rows > 0) {
+            if ($tmp->num_rows > 0) {
                 // output data of each row
                 $res = [];
                 while ($row = $tmp->fetch_assoc()) {
-                    array_push($res, new Shoe($row["id"],$row["name"],$row['price'],$row['Category_id'],$row['description']));
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
                 }
                 return $res;
             }
             else{
-                return ['error' => "Something went wrong!"];
+                return null;
             }
         }
         catch (Exception $e) {
+            return ['error'=> $e->getMessage()];
+        }
+    }
+
+    public function getShoeById($id){
+        try{
+            $pre_stmt = $this->conn->prepare("SELECT * FROM shoe WHERE id = ?");
+            $pre_stmt->bind_param('s',$id);
+            $pre_stmt->execute();
+            $tmp = $pre_stmt->get_result();
+            if ($tmp->num_rows > 0) {
+                // output data of each row
+                $res = [];
+                while ($row = $tmp->fetch_assoc()) {
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                }
+                return $res;
+            }
+            else{
+                return null;
+            }            
+        }
+        catch (Exception $e) {
+            return ['error'=> $e->getMessage()];
+        }
+    }
+
+    public function getShoeByCategory($category,$page,$limit,$sortby,$type){
+        try{
+            // $pre_stmt = $this->conn->prepare('SELECT * FROM shoe WHERE category_id = ?  LIMIT ? OFFSET ? ORDER BY ? ?');
+            // $offset = (int)$limit * (int)$page;
+            $query = "SELECT * FROM shoe WHERE category_id = ? ORDER BY $sortby $type LIMIT ? OFFSET ?";
+            $pre_stmt = $this->conn->prepare($query);
+            $offset = $limit * $page;
+            $pre_stmt->bind_param('sss',$category,$limit,$offset);
+            $pre_stmt->execute();
+            $tmp = $pre_stmt->get_result();
+            if ($tmp->num_rows > 0) {
+                // output data of each row
+                $res = [];
+                while ($row = $tmp->fetch_assoc()) {
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                }
+                return $res;
+            }
+            else{
+                return null;
+            }
+        }
+        catch (Exception $e){
             return ['error'=> $e->getMessage()];
         }
     }
