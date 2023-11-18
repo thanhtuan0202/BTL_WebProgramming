@@ -19,7 +19,12 @@ class Controller{
                 $shoeController->invoke($method,$parsed,$pathElements);                
             }
             else if($pathElements[3] === 'carts'){
-
+                // carts/user_id -> get all data in cart of current user
+                // carts/user_id -> post new data to cart
+                // carts/user_id/item_id -> delete data from cart
+                include_once("CartController.php");
+                $cartController = new CartController();
+                $cartController->invoke($method,$parsed,$pathElements);
             }
             else if($pathElements[3] === 'images'){
 

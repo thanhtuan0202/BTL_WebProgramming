@@ -39,7 +39,7 @@ class ShoeController
         }
 
         if (!isset($query_lst['sortby'])) {
-          $sortby = "price";
+          $sortby = "create_at";
         } else {
           $sortby = $query_lst['sortby'];
           if ($sortby != "time" && $sortby != "price") {
@@ -160,7 +160,6 @@ class ShoeController
           $res = $this->model->getShoeByCategory($path[5], $page, $limit, $sortby, $type);
           if ($res == null) {
             echo $res;
-
           } else {
             $data = array(
               'data' => array('shoes' => $res)
@@ -172,6 +171,5 @@ class ShoeController
         }
       }
     }
-    
   }
 }
