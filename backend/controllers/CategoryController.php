@@ -18,7 +18,7 @@ class CategoryController
       $json = json_encode($data);
       return $json;
   }
-  public function invoke($method, $parsed, $pathElements)
+  public function invoke($method, $parsed, $pathElements,$token = null)
   {
     if(count($pathElements) > 4){
       $json = $this->pahtNotFound();

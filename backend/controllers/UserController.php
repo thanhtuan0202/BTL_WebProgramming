@@ -50,22 +50,19 @@ class UserController
         return $json;
     }
 
-    public function invoke($method, $parsed, $path)
+    public function invoke($method, $parsed, $path,$token = null)
     {
-        if (isset($path[4])) {
-            include_once("utils/utils.php");
-            //action with path users/usr_id
-            if (!isNumberID($path[4])) {
-                $data = array(
-                    'data' => array('error' => 'Invalid number id')
-                );
-                http_response_code(400);
+        if (!isset($path[4])) {
+            if ($token == null) {
+                $data = "FORBIDDEN";
+                http_response_code(403);
                 header('Content-Type: application/json');
-                $json = json_encode($data);
-                echo $json;
+                echo json_encode($data);
             } else {
+                include_once("utils/jwt.php");
+                $payload = decode_jwt($token)['payload'];
                 if ($method == "GET") {
-                    $res = $this->model->getUserDetail($path[4]);
+                    $res = $this->model->getUserDetail($payload["user_id"]);
                     if ($res == null) {
                         $data = array(
                             'data' => array('error' => 'Tài khoản không tồn tại!')
@@ -95,7 +92,7 @@ class UserController
                         $json = json_encode($data);
                         echo $json;
                     } else {
-                        $res = $this->model->changeUserInfo($path[4], $input['fullname'], $input['email'], $input['address'], $input['dob'], $input['phone'], $input['gender']);
+                        $res = $this->model->changeUserInfo($payload["user_id"], $input['fullname'], $input['email'], $input['address'], $input['dob'], $input['phone'], $input['gender']);
                         $data = array(
                             'data' => $res
                         );
@@ -106,7 +103,7 @@ class UserController
                     }
                 } else if ($method == "PATCH") {
                     $input = (array) json_decode(file_get_contents('php://input'), true);
-                    $res = $this->model->changeUserPassword($input['current_pass'], $input['new_pass'], $input['confirm_pass'], $path[4]);
+                    $res = $this->model->changeUserPassword($input['current_pass'], $input['new_pass'], $input['confirm_pass'], $payload["user_id"]);
                     if ($res == null) {
                         $data = array(
                             'data' => array('error' => 'Tài khoản không tồn tại!')

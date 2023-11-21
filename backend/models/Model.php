@@ -15,7 +15,8 @@ class Model
     public function login($username, $password)
     {
         try {
-            $pre_stmt = $this->conn->prepare("select * from user where username = ? and password = ?");
+            $pre_stmt = $this->conn->prepare("select * from user us, role r, user_role ur 
+            where us.id = ur.user_id and r.id = ur.role_id and username = ? and password = ?");
             $pre_stmt->bind_param("ss", $username, $password);
             $pre_stmt->execute();
             $temp = $pre_stmt->get_result();
@@ -24,11 +25,9 @@ class Model
                 return null;
             } else {
                 $res = $temp->fetch_assoc();
-                return array(
-                    "username" => $res["username"],
-                    "role" => $res["role"],
-                    "fullname" => $res["fullname"],
-                );
+                include_once("utils/jwt.php");
+                $token =  gen_jwt($res["username"],$res["user_id"],$res["name"]);
+                return $token;
             }
         } catch (Exception $e) {
             $res = ["error" => $e->getMessage()];
@@ -41,6 +40,9 @@ class Model
             $pre_stmt = $this->conn->prepare("insert into user (username,password,fullname,phone,dob,gender) values (?,?,?,?,?,?)");
             $pre_stmt->bind_param("ssssss", $username, $password, $fullname, $phone, $dob, $gender);
             $pre_stmt->execute();
+            $user_id = $this->conn->insert_id;
+            $query = "insert into user_role(user_id,role_id) values($user_id,2);";
+            $this->conn->query($query);
             $res = ["success" => "Tạo tài khoản thành công!"];
             return $res;
         } catch (Exception $e) {
@@ -196,7 +198,7 @@ class Model
                 return $res;
             }
             else{
-                return null;
+                return [];
             }            
         }
         catch (Exception $e) {
@@ -224,6 +226,27 @@ class Model
             }
             else{
                 return null;
+            }
+        }
+        catch (Exception $e){
+            return ['error'=> $e->getMessage()];
+        }
+    }
+    
+    public function searchShoeByName($name){
+        try{
+            $query = "SELECT * FROM shoe WHERE name LIKE '%$name%'";
+            $stmt = $this->conn->query($query);
+            if ($stmt->num_rows > 0) {
+                // output data of each row
+                $res = [];
+                while ($row = $stmt->fetch_assoc()) {
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                }
+                return $res;
+            }
+            else{
+                return [];
             }
         }
         catch (Exception $e){

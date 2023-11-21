@@ -39,7 +39,7 @@ class AuthController
               http_response_code(200);
               header('Content-Type: application/json');
               $data = array(
-                'data' => array('msg' => 'login successfull', 'user' => $res)
+                'data' => array('token' => $res)
               );
               $json = json_encode($data);
               echo $json;

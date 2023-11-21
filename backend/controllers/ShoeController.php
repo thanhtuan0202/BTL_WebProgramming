@@ -7,7 +7,7 @@ class ShoeController
   {
     $this->model = new Model();
   }
-  public function invoke($method, $parsed, $path)
+  public function invoke($method, $parsed, $path,$token = null)
   {
     if ($method == 'GET') {
       include_once('utils/utils.php');
@@ -76,22 +76,29 @@ class ShoeController
           header('Content-Type: application/json');
           echo json_encode($data);
         }
-
       } else if (!isset($path[5])) {
         //get for shoes/shoe_id 
-
-        $res = $this->model->getShoeById($path[4]);
-        if ($res == null) {
-          echo $res;
-        } else {
+        if ($path[4] == "search") {
+          $query_lst = [];
+          parse_str($parsed['query'], $query_lst);
+          //var_dump($query_lst);
+          $res = $this->model->searchShoeByName($query_lst["q"]);
           $data = array(
-            'data' => array('shoes' => $res)
+            'data' => array('shoe' => $res)
+          );
+          http_response_code(200);
+          header('Content-Type: application/json');
+          echo json_encode($data); 
+        } else {
+          $res = $this->model->getShoeById($path[4]);
+
+          $data = array(
+            'data' => array('shoe' => $res)
           );
           http_response_code(200);
           header('Content-Type: application/json');
           echo json_encode($data);
         }
-
       } else if (!isset($path[6])) {
         //get for shoes/category/category_id
 
@@ -156,7 +163,7 @@ class ShoeController
           //error input value
         } else {
           //query in model
-          
+
           $res = $this->model->getShoeByCategory($path[5], $page, $limit, $sortby, $type);
           if ($res == null) {
             echo $res;
