@@ -7,7 +7,7 @@ class ShoeController
   {
     $this->model = new Model();
   }
-  public function invoke($method, $parsed, $path,$token = null)
+  public function invoke($method, $parsed, $path, $token = null)
   {
     if ($method == 'GET') {
       include_once('utils/utils.php');
@@ -88,7 +88,7 @@ class ShoeController
           );
           http_response_code(200);
           header('Content-Type: application/json');
-          echo json_encode($data); 
+          echo json_encode($data);
         } else {
           $res = $this->model->getShoeById($path[4]);
 
@@ -170,6 +170,78 @@ class ShoeController
           } else {
             $data = array(
               'data' => array('shoes' => $res)
+            );
+            http_response_code(200);
+            header('Content-Type: application/json');
+            echo json_encode($data);
+          }
+        }
+      }
+    } else if ($method == "POST") {
+      if ($token == null) {
+        $data = array(
+          'data' => array('error' => "Unauthorized")
+        );
+        http_response_code(401);
+        header('Content-Type: application/json');
+        $json = json_encode($data);
+        echo $json;
+      } else {
+        include_once("utils/jwt.php");
+        $payload = decode_jwt($token)["payload"];
+        if ($payload["role"] != "admin") {
+          $data = array(
+            'data' => array('error' => "Forbidden")
+          );
+          http_response_code(403);
+          header('Content-Type: application/json');
+          $json = json_encode($data);
+          echo $json;
+        } else {
+          $input = (array) json_decode(file_get_contents('php://input'), true);
+          if (!array_key_exists("image", $input)) {
+            $input["image"] = "";
+          }
+          $res = $this->model->addNewShoe($input['name'], $input["category_id"], $input["price"], $input["description"],$input["image"], $input["variant"]);
+          $data = array(
+            'data' => $res
+          );
+          http_response_code(200);
+          header('Content-Type: application/json');
+          echo json_encode($data);
+        }
+      }
+    }
+    else if($method == "PUT"){
+      if(isset($path[4])){
+        $shoe_id = $path[4];
+        if ($token == null) {
+          $data = array(
+            'data' => array('error' => "Unauthorized")
+          );
+          http_response_code(401);
+          header('Content-Type: application/json');
+          $json = json_encode($data);
+          echo $json;
+        } else {
+          include_once("utils/jwt.php");
+          $payload = decode_jwt($token)["payload"];
+          if ($payload["role"] != "admin") {
+            $data = array(
+              'data' => array('error' => "Forbidden")
+            );
+            http_response_code(403);
+            header('Content-Type: application/json');
+            $json = json_encode($data);
+            echo $json;
+          } else {
+            $input = (array) json_decode(file_get_contents('php://input'), true);
+            if (!array_key_exists("image", $input)) {
+              $input["image"] = "";
+            }
+            $res = $this->model->changeShoeDetail($shoe_id, $input["price"], $input["description"],$input["image"]);
+            $data = array(
+              'data' => $res
             );
             http_response_code(200);
             header('Content-Type: application/json');

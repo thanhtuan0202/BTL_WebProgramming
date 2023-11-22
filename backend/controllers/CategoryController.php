@@ -36,14 +36,38 @@ class CategoryController
         echo $json;
       }
       else if($method == "POST"){
-        $input = (array) json_decode(file_get_contents('php://input'), true);
-        $res = $this->model->addNewCategory($input['name']);
-        $data = array(
-          'data' => $res
-        );
-        http_response_code(200);
-        header('Content-Type: application/json');
-        echo json_encode($data);
+        if($token == null){
+          $data = array(
+            'data' => array('error' => "Unauthorized")  
+          );
+          http_response_code(401);
+          header('Content-Type: application/json');
+          $json = json_encode($data);
+          echo $json;
+        }
+        else{
+          include_once("utils/jwt.php");
+          $payload = decode_jwt($token)["payload"];
+          if($payload["role"] != "admin"){
+            $data = array(
+              'data' => array('error' => "Forbidden")  
+            );
+            http_response_code(403);
+            header('Content-Type: application/json');
+            $json = json_encode($data);
+            echo $json;
+          }
+          else{
+            $input = (array) json_decode(file_get_contents('php://input'), true);
+            $res = $this->model->addNewCategory($input['name']);
+            $data = array(
+              'data' => $res
+            );
+            http_response_code(200);
+            header('Content-Type: application/json');
+            echo json_encode($data);
+          }
+        }
       }
       else{
         $data = array(

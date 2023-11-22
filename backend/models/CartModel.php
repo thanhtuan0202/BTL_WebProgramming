@@ -142,9 +142,9 @@ class CartModel
 
     public function getItemsByOrder($order_id){
         try{
-            $stmt = $this->conn->prepare("select shoe_id,name,color,model,size,price,quantity,total_price 
-                                            from cart_line cl, variant_shoe vs, shoe s 
-                                            where order_id = ? and cl.vp_id = vs.id and vs.shoe_id = s.id
+            $stmt = $this->conn->prepare("select product_id,name,color,model,size,price,quantity,total_price 
+                                            from cart_line cl, variant_product vs, shoe s 
+                                            where order_id = ? and cl.vp_id = vs.id and vs.product_id = s.id
                                             order by total_price desc;");
             $stmt->bind_param("s",$order_id);
             $stmt->execute();

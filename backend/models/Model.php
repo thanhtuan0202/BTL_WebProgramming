@@ -147,7 +147,7 @@ class Model
             $stmt->bind_param("s", $name);
             $stmt->execute();
             $res = array(
-                'msg' => 'Thêm thành công!'
+                'success' => 'Thêm thành công!'
             );
             return $res;
         } catch (Exception $e) {
@@ -170,7 +170,10 @@ class Model
                 // output data of each row
                 $res = [];
                 while ($row = $tmp->fetch_assoc()) {
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
                 }
                 return $res;
             }
@@ -193,7 +196,10 @@ class Model
                 // output data of each row
                 $res = [];
                 while ($row = $tmp->fetch_assoc()) {
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
                 }
                 return $res;
             }
@@ -220,7 +226,10 @@ class Model
                 // output data of each row
                 $res = [];
                 while ($row = $tmp->fetch_assoc()) {
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
                 }
                 return $res;
             }
@@ -233,7 +242,7 @@ class Model
         }
     }
     
-    public function searchShoeByName($name){
+    public function searchShoeByName(string $name){
         try{
             $query = "SELECT * FROM shoe WHERE name LIKE '%$name%'";
             $stmt = $this->conn->query($query);
@@ -241,7 +250,10 @@ class Model
                 // output data of each row
                 $res = [];
                 while ($row = $stmt->fetch_assoc()) {
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"]));
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
                 }
                 return $res;
             }
@@ -250,6 +262,64 @@ class Model
             }
         }
         catch (Exception $e){
+            return ['error'=> $e->getMessage()];
+        }
+    }
+
+    public function addNewShoe(string $name,int $category_id,int $price,string $description,string $base64,$variant){
+        try{
+            include_once("utils/img_process.php");
+            if (!empty($base64)) {
+                $image = new Image();
+                $filename = $image->decodeBase64($base64);
+                if ($filename == "") {
+                    $res = ["result" => "fail", "message" => "type of image must be png or jpg"];
+                    return $res;
+                }
+            }
+            $query = "INSERT INTO shoe(name,category_id,price,create_at,img_id) values(?,?,?,now(),?)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("siis",$name,$category_id,$price,$filename);
+            $stmt->execute();
+            $shoe_id = $this->conn->insert_id;
+            foreach($variant as $item){
+                $query = "INSERT INTO variant_product(color,size,model,in_stock,product_id) values(?,?,?,?,$shoe_id)";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("sssi", $item["color"],$item["size"],$item["model"],$item["in_stock"]);
+                $stmt->execute();
+                $stmt->close();
+            }
+            $res = array(
+                'success' => 'Thêm thành công!'
+            );
+            return $res;
+        }
+        catch (Exception $e){
+            return ['error'=> $e->getMessage()];
+        }
+    }
+
+    public function changeShoeDetail(int $shoe_id,int $price, string $description,string $base64){
+        try{
+            include_once("utils/img_process.php");
+            if (!empty($base64)) {
+                $image = new Image();
+                $filename = $image->decodeBase64($base64);
+                if ($filename == "") {
+                    $res = ["result" => "fail", "message" => "type of image must be png or jpg"];
+                    return $res;
+                }
+            }
+            $query = "UPDATE shoe SET price = ?, description = ?, image = ? WHERE id = $shoe_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bind_param("iss", $price, $description, $filename);
+            $stmt->execute();
+            $res = array(
+                'success' => 'Chỉnh sửa thành công!'
+            );
+            return $res;
+        }
+        catch(Exception $e){
             return ['error'=> $e->getMessage()];
         }
     }

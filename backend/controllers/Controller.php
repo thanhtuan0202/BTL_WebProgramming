@@ -26,8 +26,11 @@ class Controller{
                 $cartController = new CartController();
                 $cartController->invoke($method,$parsed,$pathElements,$token);
             }
-            else if($pathElements[3] === 'images'){
-
+            else if($pathElements[3] === 'variants'){
+                //for variant products url
+                include_once("VariantProductController.php");
+                $variantController = new VariantController();
+                $variantController->invoke($method,$parsed,$pathElements,$token);
             }
             else if($pathElements[3] === 'categories'){
                 include_once("CategoryController.php");

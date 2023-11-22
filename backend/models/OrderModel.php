@@ -61,11 +61,11 @@ class OrderModel{
         }  
     }
 
-    public function getDetailOrder($order_id){
+    public function getDetailOrder($order_id,$user_id){
         try{
             //query order infomation
-            $stmt = $this->conn->prepare("SELECT * FROM orders WHERE id = ?");
-            $stmt->bind_param("s",$order_id);
+            $stmt = $this->conn->prepare("SELECT * FROM orders WHERE id = ? and user_id = ?");
+            $stmt->bind_param("ii",$order_id, $user_id);
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows > 0){
@@ -87,27 +87,6 @@ class OrderModel{
         }
     }
 
-    public function getOrdersByStatus($status){
-        try{
-            $stmt = $this->conn->prepare("SELECT * FROM orders WHERE status = ?");
-            $stmt->bind_param("s",$status);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if($result->num_rows > 0){
-                $res = [];
-                while($row = $result->fetch_assoc()){
-                    array_push($res, new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],null,$row["delivery_time"]));
-                }
-                return $res;
-            }
-            else{
-                return [];
-            }
-        }
-        catch(Exception $e){
-            return ["error"=> $e->getMessage()];
-        }
-    }
     public function getOrderByItemInOrder($shoe_id){
         try{
             $stmt = $this->conn->prepare("");
@@ -135,8 +114,7 @@ class OrderModel{
                 foreach($cart_item as $item){
                     $total_price += $item->total_price;
                 }
-                $query = "INSERT INTO orders (user_id,address,phone_number,total_price,create_at) 
-                values ($user_id,?,?,?,now())";
+                $query = "INSERT INTO orders (user_id,address,phone_number,total_price,create_at) values ($user_id,?,?,?,now())";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bind_param("sss", $address,$phone_number,$total_price);
                 $stmt->execute();
