@@ -1,0 +1,10 @@
+.search-bar {
+  width: 95%;
+  margin: 1%;
+  min-height: 450px;
+  box-shadow: 0 2px 4px #3c3b3b, 0 2px 4px #3c3b3b;
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: #fcfcfc;
+}
+

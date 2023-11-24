@@ -1,0 +1,31 @@
+.order-cart-area {
+    border-radius: 5px;
+    background-color: orange;
+  }
+  
+  .order-cart-area .order-cart h5 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-left: 15px;
+    padding-top: 20px;
+  }
+  .order-cart-area .order-cart p {
+    font-size: 1.75rem;
+    margin: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .order-checkout-btn {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+    text-decoration: none;
+    text-transform: none;
+    border-radius: 1px;
+  }
+  
+  .order-checkout-btn:hover {
+    color: black;
+  }
+  

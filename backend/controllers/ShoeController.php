@@ -84,16 +84,18 @@ class ShoeController
           //var_dump($query_lst);
           $res = $this->model->searchShoeByName($query_lst["q"]);
           $data = array(
-            'data' => array('shoe' => $res)
+            'data' => array('shoes' => $res)
           );
           http_response_code(200);
           header('Content-Type: application/json');
           echo json_encode($data);
         } else {
           $res = $this->model->getShoeById($path[4]);
-
+          include_once("models/VariantShoeModel.php");
+          $variant = new VariantShoeModel();
+          $variant_item = $variant->getVariantShoe($path[4]);
           $data = array(
-            'data' => array('shoe' => $res)
+            'data' => array('shoes' => $res, 'variant' => $variant_item)
           );
           http_response_code(200);
           header('Content-Type: application/json');

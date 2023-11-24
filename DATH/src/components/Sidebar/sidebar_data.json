@@ -1,0 +1,18 @@
+[
+    {
+      "display_name": "Trái cây",
+      "color": "#FFDB0C",
+      "route": "/"
+    },
+    {
+      "display_name": "Đồ gia dụng",
+      "color": "#FFFFFF",
+      "route": "/"
+    },
+    {
+      "display_name": "Đồ điện tử",
+      "color": "#FFDB0C",
+      "route": "/"
+    }
+]
+  

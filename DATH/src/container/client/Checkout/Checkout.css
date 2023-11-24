@@ -1,0 +1,16 @@
+.checkout {
+    padding: 15px 0;
+    width: 100%;
+    background-color: white;
+}
+.checkout__title {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+}
+.checkout__icon {
+            margin-right: 5px;
+            display: inline-block;
+            color: orange;
+        }

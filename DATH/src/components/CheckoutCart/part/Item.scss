@@ -1,0 +1,40 @@
+.dish-cart {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 5px;
+
+  border-bottom: 1px solid #eee;
+  &__detail {
+    /* Display */
+    display: flex;
+    padding: 5px 5px;
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    font-size: 20px;
+
+    &__remove {
+      width: 50px;
+      font-size: 16px;
+      background-color: #fc9420;
+      color: white;
+
+      border-radius: 10px;
+      border: 2px solid #fc9420;
+
+      font-weight: bold;
+      transition: all 0.25s ease-in-out !important;
+    }
+
+    &__remove:hover {
+      background-color: white;
+      color: #fc9420;
+
+      border: 2px solid #fc9420;
+    }
+  }
+
+  &__price {
+    padding: 5px 5px;
+
+    font-size: 16px;
+  }
+}

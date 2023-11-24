@@ -1,0 +1,13 @@
+.list-group{
+    margin: 5px 0px;
+    box-shadow: 0 0px 0px #565656, 0 0px 1px #505050;
+    padding: 3px 2.4rem;
+    background-color: #ffffff;
+}
+.grid-home {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    text-align: center;
+  }

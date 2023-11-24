@@ -194,12 +194,11 @@ class Model
             $tmp = $pre_stmt->get_result();
             if ($tmp->num_rows > 0) {
                 // output data of each row
-                $res = [];
                 while ($row = $tmp->fetch_assoc()) {
                     include_once("utils/img_process.php");
                     $img = new Image();
                     $img_link = $img->getlink($row["img_id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
+                    $res =  new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link);
                 }
                 return $res;
             }
