@@ -8,38 +8,48 @@ import ProductItem from "../../../components/ProductItem";
 
 const Product = () => {
   const [category, setCategory] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [chosen, setChosen] = useState(0);
 
-  const fetchCategory = async (props) => {
-    const res = await axios.get(
-      `http://localhost/assignment/backend/index.php/categories`
-    );
-    setCategory(res.data.data);
-    setLoading(true);
+  const fetchCategory = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost/assignment/backend/index.php/categories`
+      );
+      setCategory(res.data.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
   useEffect(() => {
     fetchCategory();
   }, []);
 
   const [product, setProduct] = useState([]);
-  const [ploading, setPloading] = useState(false);
   const fetchProduct = async (idx) => {
-    if(idx === undefined){
-      idx = 0;
+    try {
+      if (idx === undefined) {
+        idx = 0;
+      }
+      const res = await axios.get(
+        `http://localhost/assignment/backend/index.php/shoes/category/${idx + 1}`
+      );
+      console.log("Product: ", res.data.data);
+      setProduct(res.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProduct([]);
     }
-    const res = await axios.get(
-      `http://localhost/assignment/backend/index.php/shoes/category/${idx + 1}`
-    );
-    console.log("Product: ", res.data.data);
-    setProduct(res.data.data);
-    setPloading(true);
   };
-  useEffect(() => {
-    fetchProduct();
-  }, [loading]);
 
-  return loading === true ? (
+  useEffect(() => {
+    fetchProduct(chosen);
+  }, [chosen]);
+
+  return loading === false ? (
     <>
       <div className="grid-container">
         <div className="sidebar grid-item">
@@ -70,7 +80,7 @@ const Product = () => {
         </div>
 
         <div className="grid-item">
-          {product !== undefined ? (
+          {product ? (
             <div className="grid">
               {product.shoes.map((product, index) => (
                 <ProductItem data={product} key={index} />

@@ -11,13 +11,12 @@ function Header() {
   const [name, setName] = useState("");
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.loginUser);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = (e) => {
     alert("Đăng xuất thành công!");
     localStorage.removeItem("user");
-    dispatch(delLoginAction());
+    localStorage.removeItem("token");
     navigate("/");
   };
 
@@ -91,13 +90,13 @@ function Header() {
             </Link>
           </div>
           <div>
-            <Link to={user.isLogin ? "/user" : "/login"} className="link">
+            <Link to={user ? "/user" : "/login"} className="link">
               <i class="bi bi-person"></i>
-              {user.isLogin ? user.userInfo.name : "Đăng nhập"}
+              {user ? user.name : "Đăng nhập"}
             </Link>
           </div>
 
-          {user.isLogin ? (
+          {user ? (
             <div className="header__logout" title="Đăng xuất">
               <Button type="submit" onClick={handleLogout}>
                 <i class="bi bi-box-arrow-right"></i>

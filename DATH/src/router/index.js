@@ -9,6 +9,8 @@ import Search from "../components/Search";
 import Descript from "../components/Descript";
 import AdminHomePage from "../container/admin";
 import DanhSachPage from "../container/admin/Page/DanhSachDonHang";
+import RegisterPage from "../container/client/Register";
+import ClientInfo from "../container/client/ClientInfo";
 const RouteHome = [
     {
       exact: true,
@@ -16,6 +18,12 @@ const RouteHome = [
       component: HomePage,
       layout: "default",
     },    
+    {
+      exact: true,
+      path: "/user",
+      component: ClientInfo,
+      layout: "default",
+    },   
     {
       exact: false,
       path: "/product",
@@ -52,7 +60,18 @@ const RouteHome = [
       component: Descript,
       layout: "default",
     },
-
+    {
+      exact: false,
+      path: "/login",
+      component: Login,
+      layout: "",
+    },
+    {
+      exact: false,
+      path: "/register",
+      component: RegisterPage,
+      layout: "",
+    }
   ];
 
   const RouteAdmin = [

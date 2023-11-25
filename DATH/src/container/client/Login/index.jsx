@@ -1,152 +1,117 @@
+// LoginPage.js
 import React, { useState } from 'react';
-import { RootContainer, FlexBox, SignIn, SignUp, BoxSignIn, InputField, ButtonBox } from './login.style.page';
-import { Button } from '@mui/material';
+import { TextField, Button, Container, Typography, Box} from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import { setLoginAction } from './../../../redux/Reducers/loginUser';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from "axios";
+import { useJwt } from "react-jwt";
 
-const renderSignInPage = (event) => {
-  document.getElementById('signUpPage').style.transition = 'all 0.5s';
-  document.getElementById('signInPage').style.transition =
-    '0.7s 0.5s ease-in-out';
-  document.getElementById('signInPage').style.transform = 'translateX(0px)';
-  document.getElementById('signUpPage').style.transform = 'translateX(100%)';
-};
-
-const renderSignUpPage = (event) => {
-  document.getElementById('signUpPage').style.transition =
-    '0.7s 0.5s ease-in-out';
-  document.getElementById('signInPage').style.transition = 'all 0.5s';
-  document.getElementById('signInPage').style.transform = 'translateX(-100%)';
-  document.getElementById('signUpPage').style.transform = 'translateX(0px)';
-};
-
-function Login() {
-  const classes = useStyles();
+const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const [login, setLogin] = useState({
-    userName: "",
-    passWord: "",
-  });
-
-  const handleChangeLogin = (e) => {
-    const { name, value } = e.target;
-    setLogin({ ...login, [name]: value });
-    console.log(login);
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
   };
 
-  const Login = async (e) => {
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  // function decodeJWT(jwt) {
+  //   const [header, payload, signature] = jwt.split('.');
+    
+  //   const decodedHeader = JSON.parse(base64URLDecode(header));
+  //   const decodedPayload = JSON.parse(base64URLDecode(payload));
+  //   const decodedSignature = base64URLDecode(signature);
+  //   console.log(decodedHeader, decodedPayload, decodedSignature)
+  //   return {
+  //     header: decodedHeader,
+  //     payload: decodedPayload,
+  //     signature: decodedSignature
+  //   };
+  // }
+  
+  // function base64URLDecode(text) {
+  //   const paddedText = text + '='.repeat(4 - (text.length % 4)); // Add padding if needed
+  //   const decoded = atob(paddedText.replace(/-/g, '+').replace(/_/g, '/'));
+  //   return decoded;
+  // }
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const result = await axios.post(
-        "http://localhost:5000/login-account",
-        login
-      );
-      if (result.data) {
-        alert("Đăng nhập thành công!");
-        localStorage.setItem("user", JSON.stringify(result.data));
-        const dataload = {
-          isLogin: true,
-          userInfo: result.data.result,
+    if (username && password) {
+      try {
+        const result = await axios.post(
+          `http://localhost/assignment/backend/index.php/auth/login`,
+          { username: username, password: password}
+        );
+        console.log(result);
+        if (result.data && result.data.data.token) {
+          alert("Đăng nhập thành công!");
+          localStorage.setItem("token", JSON.stringify({token: result.data.data.token}));
+
+          const payload = result.data.data.user;
+          localStorage.setItem("user", JSON.stringify(payload));
+          navigate('/');
         }
-        dispatch(setLoginAction(dataload));
-        navigate('/');
+        else if (result.data && result.data.data.error){
+          alert(result.data.data.error);
+        }
+      } catch (err) {
+        alert("Đăng nhập không thành công! Vui lòng thử lại!");
       }
-    } catch (err) {
-      alert("Đăng nhập không thành công! Vui lòng thử lại!");
+    } else {
+      setError('Please enter both username and password.');
     }
   };
 
-  const [signUp, setSignUp] = useState(
-    {
-      name: "",
-      email: "",
-      password: "",
-      phone: "",
-      username: "",
-    }
-  );
-
-  const handleChangeSignUp = (e) => {
-    const { name, value } = e.target;
-    setSignUp({...signUp, [name]: value});
-  }
-
-  const Register = async (e) => {
-    const cfpass = document.getElementById('cfpass');
-    if (cfpass.value !== signUp.password)
-    {
-      alert('Mật khẩu không khớp! Vui lòng nhập lại!');
-      return;
-    }
-    try {
-      const result = await axios.post(
-        "",
-        signUp
-      );
-      alert("Đăng ký thành công!");
-    } catch (err) {
-      alert("Đăng ký không thành công!");
-    }
-  }
   return (
-    <RootContainer>
-      {/* ... Other elements */}
-      <div className="navbar-detail">
-        <Link to="/">
-          <i className="bi bi-chevron-left" style={{ fontSize: 100 }}></i>
-          Quay lại trang chủ
-        </Link>
-      </div>
-      <FlexBox>
-        <SignIn id="signInPage">
-          <BoxSignIn>
-            {/* ... */}
-            <form action="" autoComplete="off">
-              <InputField>
-                <i className="bi bi-person"></i>
-                <input
-                  onChange={handleChangeLogin}
-                  type="text"
-                  name="userName"
-                  placeholder="Tên đăng nhập"
-                ></input>
-              </InputField>
-              {/* ... Other input fields */}
-              <ButtonBox>
-                <Button onClick={Login}>Đăng nhập</Button>
-              </ButtonBox>
-            </form>
-          </BoxSignIn>
-        </SignIn>
-
-        <SignUp id="signUpPage">
-          <BoxSignUp>
-            {/* ... */}
-            <form action="" autoComplete="off">
-              <InputField>
-                <i className="bi bi-envelope"></i>
-                <input
-                  onChange={handleChangeSignUp}
-                  type="email"
-                  name="email"
-                  placeholder="email"
-                ></input>
-              </InputField>
-              {/* ... Other input fields */}
-              <ButtonBox>
-                <Button onClick={Register}>ĐĂNG KÝ</Button>
-              </ButtonBox>
-            </form>
-          </BoxSignUp>
-        </SignUp>
-      </FlexBox>
-    </RootContainer>
+    <Container maxWidth="xs">
+      <Box sx={{ marginTop: 8, textAlign: 'center' }}>
+        <Typography variant="h4" component="h1">
+          Login
+        </Typography>
+        {error && (
+          <Typography variant="body1" color="error" sx={{ marginTop: 2 }}>
+            {error}
+          </Typography>
+        )}
+        <Box component="form" onSubmit={handleSubmit} sx={{ marginTop: 3 }}>
+          <TextField
+            type="username"
+            label="Username"
+            fullWidth
+            value={username}
+            onChange={handleUsernameChange}
+            required
+            margin="normal"
+          />
+          <TextField
+            type="password"
+            label="Password"
+            fullWidth
+            value={password}
+            onChange={handlePasswordChange}
+            required
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: 2 }}>
+            Login
+          </Button>
+          <Typography variant="body2" sx={{ marginTop: 2 }}>
+            Don't have an account?{' '}
+            <Link to="/register" >
+              Register here
+            </Link>
+          </Typography>
+        </Box>
+      </Box>
+    </Container>
   );
-}
+};
 
 export default Login;
