@@ -27,7 +27,16 @@ class Model
                 $res = $temp->fetch_assoc();
                 include_once("utils/jwt.php");
                 $token =  gen_jwt($res["username"],$res["user_id"],$res["name"]);
-                return $token;
+                $res = array(
+                    'token' => $token,
+                    'user' => array(
+                        'id' => $res["user_id"],
+                        'username' => $res["username"],
+                        'name' => $res["fullname"],
+                        'role' => $res["name"],
+                    )
+                );
+                return $res;
             }
         } catch (Exception $e) {
             $res = ["error" => $e->getMessage()];
@@ -63,7 +72,7 @@ class Model
                 return null;
             } else {
                 $res = $temp->fetch_assoc();
-                $user_info = new User($res['id'], $res['username'], $res['fullname'], $res['dob'], $res['address'], $res['email'], $res['phone'], $res['gender']);
+                $user_info = new User($res['id'], $res['username'], $res['fullname'], $res['dob'], $res['email'], $res['phone'], $res['gender']);
                 return $user_info;
             }
         } catch (Exception $e) {
@@ -108,8 +117,8 @@ class Model
     public function changeUserInfo($user_id, $fullname, $email, $address, $dob, $phone, $gender)
     {
         try {
-            $pre_stmt = $this->conn->prepare("update user set fullname = ?,email=?,address=?,dob=?,phone=?,gender=? where id = ?");
-            $pre_stmt->bind_param("sssssss", $fullname, $email, $address, $dob, $phone, $gender, $user_id);
+            $pre_stmt = $this->conn->prepare("update user set fullname = ?,email=?,dob=?,phone=?,gender=? where id = ?");
+            $pre_stmt->bind_param("sssssss", $fullname, $email,$dob, $phone, $gender, $user_id);
             $pre_stmt->execute();
             $res = ["success" => "Thay đổi thông tin thành công!"];
             return $res;

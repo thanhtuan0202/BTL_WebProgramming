@@ -16,23 +16,23 @@ class UserController
             array_push($error_lst, $res);
         }
         include_once("utils/utils.php");
-        if (isset($input['address'])) {
-            $res = ["msg" => "Not empty", "error-field" => "address"];
-            array_push($error_lst, $res);
-        }
-        if (isset($input['fullname'])) {
+        // if (!isset($input['address'])) {
+        //     $res = ["msg" => "Not empty", "error-field" => "address"];
+        //     array_push($error_lst, $res);
+        // }
+        if (!isset($input['fullname'])) {
             $res = ["msg" => "Not empty", "error-field" => "fullname"];
             array_push($error_lst, $res);
         }
-        if (!isValidPhoneNumber($input['phone']) || isset($input['phone'])) {
+        if (!isValidPhoneNumber($input['phone']) || !isset($input['phone'])) {
             $res = ["msg" => "Invalid phone number", "error-field" => "phone"];
             array_push($error_lst, $res);
         }
-        if (!isValidDate($input['dob']) || isset($input['dob'])) {
+        if (!isValidDate($input['dob']) || !isset($input['dob'])) {
             $res = ["msg" => "Date must is format YYYY-MM-DD", "error-field" => "dob"];
             array_push($error_lst, $res);
         }
-        if (!isValidEmail($input['email']) || isset($input['email'])) {
+        if (!isValidEmail($input['email']) || !isset($input['email'])) {
             $res = ["msg" => "Email is not a valid format", "error-field" => "email"];
             array_push($error_lst, $res);
         }
@@ -73,7 +73,7 @@ class UserController
                         echo $json;
                     } else {
                         $data = array(
-                            'data' => array("user-info" => $res)
+                            'data' => array("user_info" => $res)
                         );
                         http_response_code(200);
                         header('Content-Type: application/json');
