@@ -57,9 +57,9 @@ function CheckoutCart(props) {
   const total = useSelector((state) => state.todoCart.total);
   const paymentMethod = useSelector((state) => state.paymentMethod.method);
   console.log("payment-method: ", paymentMethod);
-  const [openPaypal, setOpenPaypal] = useState(false);
   useEffect(() => {}, [listItemCart]);
 
+  console.log("list carts: ", listItemCart);
   const current = new Date();
   const date = `${current.getFullYear()}-${current.getMonth()+1}-${current.getDate()}`;
   const [name, setName] = useState("");
@@ -171,7 +171,7 @@ function CheckoutCart(props) {
           </button>
         </div>
         {listItemCart.map((item) => (
-          <Item key={item.id} item={item} />
+          <Item key={item.id} data={item} />
         ))}
         <div className="checkout-cart__footer ">
           <div className="checkout-cart__footer__total">

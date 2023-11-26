@@ -1,18 +1,22 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import "./style.css";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
-export default function TotalItemOrder() {
-  const total = useSelector((state) => state.todoCart.total);
+import { useDispatch } from "react-redux";
+import { fetchCart } from "../../redux/Reducers/todoCart";
+export default function TotalItemOrder(props) {
+  const item = props.data;
+  const dispatch = useDispatch();
+  const handleCheckout = (e) => {
+    dispatch(fetchCart(item.carts))
+  };
   return (
     <div className="col-lg-4 order-area">
       <div className="order-cart-area">
         <div className="order-cart">
           <h5>Tổng giỏ hàng</h5>
           <p>
-            Thành tiền<span>{total}</span>
+            Thành tiền<span>{item.total_price}</span>
           </p>
         </div>
         <div className="d-flex justify-content-between">
@@ -25,9 +29,9 @@ export default function TotalItemOrder() {
             color="warning"
             variant="contained"
             className="btn"
-            disabled={total === 0 ? true : false}
+            disabled={item.total_price == 0 ? true : false}
           >
-            <Link className="order-checkout-btn" to="/checkout">
+            <Link className="order-checkout-btn" to="/checkout" onClick={handleCheckout}>
               Thanh toán
             </Link>
           </Button>

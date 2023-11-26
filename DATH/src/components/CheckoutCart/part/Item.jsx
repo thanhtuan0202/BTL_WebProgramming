@@ -4,16 +4,16 @@ import { removeCart } from '../../../redux/Reducers/todoCart';
 import './Item.scss';
 
 function Item(props) {
-  const { ten, giaBan, cartQuantity } = props.item;
+  const item = props.data;
   const dispatch = useDispatch();
   return (
     <>
       <div className="dish-cart">
         <div className="dish-cart__detail">
           <div className="d-flex flex-column p-1">
-            <div>{ten}</div>
+            <div>{item.vp_name}</div>
             <div>
-              <h4> x {cartQuantity}</h4>
+              <h4> x {item.quantity}</h4>
             </div>
             <button
               onClick={() => {
@@ -27,7 +27,7 @@ function Item(props) {
         </div>
         <div className="d-flex align-items-center dish-cart__price">
           <div>
-            <h4> {giaBan}</h4>
+            <h4> {item.price}</h4>
           </div>
         </div>
       </div>

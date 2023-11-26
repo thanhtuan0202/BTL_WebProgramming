@@ -11,6 +11,7 @@ import {
 export default function CartItem(props) {
   const dispatch = useDispatch();
   const item = props.data;
+  
   const handleAddToCart = () => {
     dispatch(addToCart(item));
   };
@@ -28,15 +29,15 @@ export default function CartItem(props) {
         </Button>
       </td>
       <td scope="row">
-        <img src={item.anh} alt="img" style={{ maxWidth: 100 }} />
+        <img src={item.image} alt="img" style={{ maxWidth: 100 }} />
       </td>
       <td className="item-name">
         <div className="details mt-3 pd-3">
-          <h3>{item.ten}</h3>
+          <h3>{item.vp_name}</h3>
         </div>
       </td>
       <td>
-        <h3 className="mt-3 pd-3">{item.giaBan}</h3>
+        <h3 className="mt-3 pd-3">{item.price}</h3>
       </td>
       <td className="table-quantity">
           <div className="mt-4 pd-4 container row"
@@ -52,7 +53,7 @@ export default function CartItem(props) {
             >
               <i class="bi bi-dash"></i>
             </Button>
-            <h4>{item.cartQuantity}</h4>
+            <h4>{item.quantity}</h4>
             <Button
               onClick={handleAddToCart}
               variant="contained"
@@ -63,7 +64,7 @@ export default function CartItem(props) {
           </div>
       </td>
       <td>
-        <h3 className="mt-3 pd-3">{item.totalPriceItem}</h3>
+        <h3 className="mt-3 pd-3">{item.total_price}</h3>
       </td>
     </tr>
   );

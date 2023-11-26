@@ -1,17 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { useSelector } from "react-redux";
+import { useDispatch } from 'react-redux';
 import CartItem from "../CartItem";
 import TotalItemOrder from "../TotalItemOrder";
-import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
+import Loader from "../Loader";
+import axios from "axios";
 import "./cart.css";
 export default function Cart() {
-  const cart = useSelector((state) => state.todoCart.cartItem);
-  console.log(cart);
-  useEffect(() => {}, [cart]);
-  return (
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem('token')
+  const fetchCart = async () => {
+    try{
+      const res = await axios.get(
+        `http://localhost/assignment/backend/index.php/carts`,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },}
+      );
+      setCart(res.data.data);
+      setLoading(false)
+      console.log("cart: ", cart);
+    }
+    catch(e){
+      console.error("Error fetching cart:", error);
+    }
+  };
+
+  useEffect( () => {
+    fetchCart();
+  }, [loading])
+  
+  return loading ? <Loader/> : (
     <div>
-    {cart.length > 0 ? 
+    {cart.carts.length > 0 ? 
       <div className="cart-area">
         <div className="table-responsive">
           <table className="table">
@@ -26,13 +49,13 @@ export default function Cart() {
               </tr>
             </thead>
             <tbody>
-              {cart.map((item, index) => {
+              {cart.carts.map((item, index) => {
                 return <CartItem key={index} data={item} />;
               })}
             </tbody>
           </table>
           <div className="container row">
-            <TotalItemOrder />
+            <TotalItemOrder data={cart}/>
           </div>
         
         </div>

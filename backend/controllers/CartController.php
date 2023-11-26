@@ -38,7 +38,7 @@ class CartController
                         );
                     } else {
                         $data = array(
-                            'data' => array('carts' => $res)
+                            'data' => $res
                         );
                     }
                     http_response_code(200);

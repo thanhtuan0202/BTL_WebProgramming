@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   number: 0,
   cartItem: [],
-  listCart: [],
   total: 0,
 };
 if (localStorage.getItem('cart') === null){
@@ -18,7 +17,8 @@ const todoCart = createSlice({
   reducers: {
     
     fetchCart: (state, action) => {
-      state.listCart = action.payload;
+      state.cartItem = action.payload;
+      state.number = state.cartItem.length
     },
     addToCart: (state, action) => {
       const itemsIndex = state.cartItem.findIndex(

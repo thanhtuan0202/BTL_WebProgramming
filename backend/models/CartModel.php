@@ -13,7 +13,7 @@ class CartModel
 
     public function getCartItems($usr_id){
         try{
-            $query = "SELECT c.id, vp.id as pid,p.name,p.price,vp.color,vp.size, quantity,total_price,c.create_at 
+            $query = "SELECT c.id, vp.id as pid,p.name,p.price,vp.color,vp.size, quantity,total_price,c.create_at ,img_id
             from cart_line c, variant_product vp, shoe p
             where user_id = ? and is_delete = 0 and c.vp_id = vp.id and p.id = vp.product_id
             order by create_at desc";
@@ -24,12 +24,20 @@ class CartModel
             if ($tmp->num_rows > 0) {
                 // output data of each row
                 $res = [];
+                $total_price = 0;
                 while ($row = $tmp->fetch_assoc()) {
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
+                    $total_price += $row["total_price"];
                     array_push($res, 
-                    new CartItem($row["pid"],$row["name"],$row["price"],$row["color"],$row["size"],$row["quantity"],$row["total_price"])
+                    new CartItem($row["pid"],$row["name"],$row["price"],$row["color"],$row["size"],$row["quantity"],$row["total_price"],$img_link)
                     );
                 }
-                return $res;
+                return array(
+                    'carts' => $res,
+                    'total_price' => $total_price
+                );
             }
             else{ 
                 return null;
@@ -42,7 +50,7 @@ class CartModel
     }
     public function getItemById($vp_id,$usr_id){
         try{
-            $query = "SELECT c.id, vp.id as pid,p.name,p.price,vp.color,vp.size, quantity,total_price,c.create_at 
+            $query = "SELECT c.id, vp.id as pid,p.name,p.price,vp.color,vp.size, quantity,total_price,c.create_at ,img_id
             from cart_line c, variant_product vp, shoe p
             where user_id = ? and is_delete = 0 and vp_id = ?  and c.vp_id = vp.id and p.id = vp.product_id
             order by create_at desc";
@@ -54,8 +62,11 @@ class CartModel
                 // output data of each row
                 $res = [];
                 while ($row = $tmp->fetch_assoc()) {
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
                     array_push($res, 
-                    new CartItem($row["pid"],$row["name"],$row["price"],$row["color"],$row["size"],$row["quantity"],$row["total_price"])
+                    new CartItem($row["pid"],$row["name"],$row["price"],$row["color"],$row["size"],$row["quantity"],$row["total_price"],$img_link)
                     );
                 }
                 return $res;
