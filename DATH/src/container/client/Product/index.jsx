@@ -10,13 +10,19 @@ const Product = () => {
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chosen, setChosen] = useState(0);
-
+  const [product, setProduct] = useState([]);
   const fetchCategory = async () => {
     try {
       const res = await axios.get(
         `http://localhost/assignment/backend/index.php/categories`
       );
       setCategory(res.data.data);
+
+      const res_pro = await axios.get(
+        `http://localhost/assignment/backend/index.php/shoes/category/${chosen + 1}`
+      );
+      console.log("Product: ", res_pro.data.data);
+      setProduct(res_pro.data.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
@@ -28,7 +34,7 @@ const Product = () => {
     fetchCategory();
   }, []);
 
-  const [product, setProduct] = useState([]);
+
   const fetchProduct = async (idx) => {
     try {
       if (idx === undefined) {

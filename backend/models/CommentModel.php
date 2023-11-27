@@ -12,14 +12,16 @@ class CommentModel{
     public function getCommentOfShoe($shoe_id, $page){
         try{
             $offset = ($page - 1) * 5;
-            $stmt = $this->conn->prepare("SELECT * FROM comment WHERE shoe_id = ? ORDER BY create_at DESC LIMIT 5 OFFSET ?");
+            $stmt = $this->conn->prepare("SELECT * FROM comment cmt,user usr
+            where cmt.sender_id = usr.id and shoe_id = ?
+            ORDER BY create_at DESC LIMIT 10 OFFSET ?");
             $stmt->bind_param("ss",$shoe_id,$offset);
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
-                    array_push($res, new Comment($row["id"],$row["content"],$row["star"],$row["sender_id"],$row["shoe_id"],$row["create_at"]));
+                    array_push($res, new Comment($row["id"],$row["content"],$row["star"],$row["fullname"],$row["shoe_id"],$row["create_at"]));
                 }
                 return $res;
             }
@@ -51,7 +53,9 @@ class CommentModel{
     public function getAllComments($page){
         try{
             $offset = ($page - 1) * 5;
-            $stmt = $this->conn->prepare("SELECT * FROM comment ORDER BY create_at DESC LIMIT 5 OFFSET ?");
+            $stmt = $this->conn->prepare("SELECT * FROM comment cmt,user usr
+            where cmt.sender_id = usr.id
+            ORDER BY create_at DESC LIMIT 10 OFFSET ?");
             $stmt->bind_param("s",$offset);
             $stmt->execute();
             $result = $stmt->get_result();
