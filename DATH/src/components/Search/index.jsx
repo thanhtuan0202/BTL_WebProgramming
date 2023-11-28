@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
 import ProductItem from "../ProductItem";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./search.css";
 
 
-export default function Search(props) {
+export default function Search({route,navigate}) {
+  const location = useLocation();
+  console.log(location.state.q)
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [nameFind, setNameFind] = useState([]);
-  useEffect(() => {
-    setNameFind(JSON.parse(localStorage.getItem("search")));
-  });
+
   const fetchSearch = async () => {
-    const res = await axios .post(
-      "http://localhost:5000/find-product-by-name",
-      nameFind
+    const res = await axios .get(
+      "http://localhost/assignment/backend/index.php/shoes/search",
+      {params: location.state}
     );
-    setData(res.data);
+    setData(res.data.data);
     setLoading(true);
-    console.log(res.data);
+    console.log(res.data.data);
   };
 
   useEffect(() => {
@@ -36,7 +35,7 @@ export default function Search(props) {
           margin: "15px 5px",
         }}
       >
-        <h1>Kết quả tìm kiếm cho "{nameFind.nameFind}"</h1>
+        <h1>Kết quả tìm kiếm cho "{location.state.q}"</h1>
       </div>
       <div
         style={{
@@ -45,10 +44,10 @@ export default function Search(props) {
           fontFamily: "roboto"
         }}
       >
-        <p> Hiển thị của {data.productResult.length} kết quả</p>
+        <p> Hiển thị của {data.shoes.length} kết quả</p>
       </div>
       <div className="grid">
-        {data.productResult.map((product, index) => (
+        {data.shoes.map((product, index) => (
           <ProductItem data={product} key={index} />
         ))}
       </div>

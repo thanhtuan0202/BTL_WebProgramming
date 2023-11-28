@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from "react";
-import Banner from "../../../components/Banner";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
+import Loader from "../../../components/Loader";
 import axios from "axios";
 import "./home.css";
 export default function HomePage() {
@@ -9,19 +9,30 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
 
   const fetchCategory = async () => {
-    const res = await axios.get("http://localhost:5000/read-list-category");
-    setCategory(res.data);
-    setLoading(true);
+    try {
+      const res = await axios.get(
+        `http://localhost/assignment/backend/index.php/categories`
+      );
+      setCategory(res.data.data);
+
+      const res_pro = await axios.get(
+        `http://localhost/assignment/backend/index.php/shoes/category/${chosen + 1}`
+      );
+      console.log("Product: ", res_pro.data.data);
+      setProduct(res_pro.data.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
   useEffect(() => {
     fetchCategory();
-  }, [loading]);
-  useEffect(() => {
-    console.log("ListCategory: ", category.data);
-  }, [loading]);
+  }, []);
+
   return loading === true ? (
     <div>
-      <Banner />
       <div className="list-group">
         <div className="receiver__header">
           <div> Danh mục</div>
@@ -38,8 +49,6 @@ export default function HomePage() {
       </div>
     </div>
   ) : (
-    <div> 
-      Server Error
-    </div>
+    <Loader />
   );
 }

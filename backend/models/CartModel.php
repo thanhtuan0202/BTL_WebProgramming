@@ -29,14 +29,14 @@ class CartModel
                     include_once("utils/img_process.php");
                     $img = new Image();
                     $img_link = $img->getlink($row["img_id"]);
-                    $total_price += $row["total_price"];
+                    $total_price = $total_price + $row["total_price"];
                     array_push($res, 
                     new CartItem($row["pid"],$row["name"],$row["price"],$row["color"],$row["size"],$row["quantity"],$row["total_price"],$img_link)
                     );
                 }
                 return array(
                     'carts' => $res,
-                    'total_price' => $total_price
+                    'total_price' => round($total_price,2)
                 );
             }
             else{ 

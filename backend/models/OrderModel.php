@@ -97,7 +97,7 @@ class OrderModel{
     }
 
     // POST
-    public function addNewOrder($user_id,$address,$phone_number){
+    public function addNewOrder($user_id,$address,$phone_number,$payment){
         try{
             include_once("models/CartModel.php");
             $cart = new CartModel();
@@ -114,13 +114,13 @@ class OrderModel{
                 foreach($cart_item as $item){
                     $total_price += $item->total_price;
                 }
-                $query = "INSERT INTO orders (user_id,address,phone_number,total_price,create_at) values ($user_id,?,?,?,now())";
+                $query = "INSERT INTO orders (user_id,address,phone_number,total_price,payment_method,create_at) values ($user_id,?,?,?,?,now())";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("sss", $address,$phone_number,$total_price);
+                $stmt->bind_param("ssss", $address,$phone_number,$total_price,$payment);
                 $stmt->execute();
                 $id = $this->conn->insert_id;
                 
-                $query = "UPDATE orders SET is_delete = 1 and order_id = $id WHERE user_id = $user_id";
+                $query = "UPDATE cart_line SET is_delete = 1 and order_id = $id WHERE user_id = $user_id";
                 $stmt = $this->conn->prepare($query);
                 $stmt->execute();
 

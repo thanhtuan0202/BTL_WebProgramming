@@ -1,0 +1,12 @@
+[
+  {
+    "icon": "bx bx-user",
+    "route": "/admin/info",
+    "content": "Hồ sơ"
+  },
+  {
+    "icon": "bx bx-log-out-circle bx-rotate-180",
+    "route": "/admin/login",
+    "content": "Đăng xuất"
+  }
+]

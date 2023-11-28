@@ -25,15 +25,7 @@ function Header() {
     setName(e.target.value);
   };
   const handleSearch = (e) => {
-    const nameFind = {
-      nameFind: name,
-    };
-    localStorage.setItem("search", JSON.stringify(nameFind));
-    if (window.location.pathname !== "/search") {
-      navigate("/search");
-    } else {
-      navigate(0);
-    }
+    navigate("/search", {state: {q: name}});
   };
 
   return (

@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RouteHome, RouteAdmin } from "./router";
 import LayoutHome from "./container/client";
 import { Fragment } from "react";
-import NavbarAdmin from "./container/admin/Navbar";
+import LayoutAdmin from "./container/admin";
 function App() {
   return (
     <div>
@@ -52,11 +52,10 @@ function App() {
                 key={index}
                 exact={item.exact}
                 path={item.path}
-                element={<NavbarAdmin> {Page} </NavbarAdmin>}
+                element={<LayoutAdmin> <Page /> </LayoutAdmin>}
               />
             );
           })}
-          ;
         </Routes>
       </BrowserRouter>
     </div>

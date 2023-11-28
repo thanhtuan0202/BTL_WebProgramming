@@ -2,6 +2,7 @@ import React from "react";
 import "./style.css";
 import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
+import StarIcon from '@mui/icons-material/Star';
 
 export default function ProductItem(props) {
   const item = props.data;
@@ -24,11 +25,16 @@ export default function ProductItem(props) {
             </h4>
           </div>
           <div className="d-flex">
-            <div className="food-card_price">
-              {" "}
-              Giá bán:
-              <span> {item.price + " $"}</span>
+            <div className="food-card_price" style={{display: "flex", justifyContent: "space-between"}}>
+              <div>
+                {" "}
+                Giá:<span> {item.price + " $"}</span>
+              </div>
+              <div>
+                <p> {item.star} <StarIcon /> </p> 
+              </div>
             </div>
+
             <div className="food-card_order-count">
               <Link to={linkToDetail} key={item.id}>
                 <Button

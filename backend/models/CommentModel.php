@@ -74,6 +74,28 @@ class CommentModel{
             return ["error"=> $e->getMessage()];
         }
     }
+
+    public function calAvgStar($shoe_id){
+        try{
+            $stmt = $this->conn->prepare("SELECT avg(star) as star FROM comment 
+            where shoe_id = ? group by shoe_id");
+            $stmt->bind_param('i', $shoe_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if($result->num_rows > 0){
+                while($row = $result->fetch_assoc()){
+                    $res = $row["star"];    
+                }
+                return round($res,1);
+            }
+            else{
+                return 0;
+            }
+        }
+        catch(Exception $e){
+            return ["error"=> $e->getMessage()];
+        }
+    }
 }
 
 ?>

@@ -38,26 +38,25 @@ const Descript = () => {
                             <li className="line"> Frontend:</li>
                             <ul className="col-md-12 line1">
                                 <li>Html, Css, Javascripts</li>
-                                <li>Bootstrap</li>
                                 <li>Reactjs</li>
-                                <li>Bootstrap Icons</li>
+                                <li>MUI material</li>
+                                <li>MUI icons</li>
                             </ul>                          
                             <li className="line">Backend:</li>
                             <ul className="col-md-12 line1">
                                 <li>Database: MySql</li>
-                                <li>ExpressJs</li>
+                                <li>PHP</li>
                             </ul>
                         </ul> 
                     </div>                                                                                                                                                                                                                                                                                                                          
                 </div>
                 <div className="col-4">
                     <h3 className="line0">Tài liệu tham khảo</h3>
-                     <div>
+                     {/* <div>
                          <ul>
                              <li className="line"> ReactJS | by F8</li>
-                             <li className="line">Youtube: Xây dựng NodeJS web server sử dụng Express-CodersX</li>
                          </ul>
-                     </div>          
+                     </div>           */}
                 </div>
             </div>
         </div>

@@ -182,7 +182,10 @@ class Model
                     include_once("utils/img_process.php");
                     $img = new Image();
                     $img_link = $img->getlink($row["img_id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
+                    include_once("models/CommentModel.php");
+                    $cmt = new CommentModel();
+                    $star_avg = $cmt->calAvgStar($row["id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg));
                 }
                 return $res;
             }
@@ -207,7 +210,10 @@ class Model
                     include_once("utils/img_process.php");
                     $img = new Image();
                     $img_link = $img->getlink($row["img_id"]);
-                    $res =  new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link);
+                    include_once("models/CommentModel.php");
+                    $cmt = new CommentModel();
+                    $star_avg = $cmt->calAvgStar($id);
+                    $res =  new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg);
                 }
                 return $res;
             }
@@ -237,7 +243,10 @@ class Model
                     include_once("utils/img_process.php");
                     $img = new Image();
                     $img_link = $img->getlink($row["img_id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
+                    include_once("models/CommentModel.php");
+                    $cmt = new CommentModel();
+                    $star_avg = $cmt->calAvgStar($row["id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg));
                 }
                 return $res;
             }
@@ -261,7 +270,10 @@ class Model
                     include_once("utils/img_process.php");
                     $img = new Image();
                     $img_link = $img->getlink($row["img_id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link));
+                    include_once("models/CommentModel.php");
+                    $cmt = new CommentModel();
+                    $star_avg = $cmt->calAvgStar($row["id"]);
+                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg));
                 }
                 return $res;
             }

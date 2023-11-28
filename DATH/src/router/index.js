@@ -7,10 +7,14 @@ import Product from "../container/client/Product";
 import Login from "../container/client/Login";
 import Search from "../components/Search";
 import Descript from "../components/Descript";
-import AdminHomePage from "../container/admin";
-import DanhSachPage from "../container/admin/Page/DanhSachDonHang";
 import RegisterPage from "../container/client/Register";
 import ClientInfo from "../container/client/ClientInfo";
+import { Fragment } from "react";
+
+import Orders from "../container/admin/pages/Orders";
+import Categories from "../container/admin/pages/Categories";
+import Products from "../container/admin/pages/Products";
+import Accounts from "../container/admin/pages/Accounts";
 const RouteHome = [
     {
       exact: true,
@@ -76,22 +80,49 @@ const RouteHome = [
 
   const RouteAdmin = [
     {
-      exact: false,
-      path: "/admin",
-      component: AdminHomePage,
-      layout: "default",
-    },    
-    {
       exact: true,
-      path: "/admin/login",
-      component: Login,
-      layout: "",
+      path: "/admin",
+      component: Orders,
     },
     {
       exact: false,
-      path: "admin/danh-sach",
-      component: DanhSachPage,
-      layout: "default",
-    }, 
+      path: "/admin/categorys",
+      component: Categories,
+    },
+    {
+      exact: false,
+      path: "/admin/products",
+      component: Products,
+    },
+    // {
+    //   exact: false,
+    //   path: "/admin/settings",
+    //   component: Settings,
+    // },
+    // {
+    //   exact: false,
+    //   path: "/admin/anothersettings",
+    //   component: AnotherSettings,
+    // },
+    // {
+    //   exact: false,
+    //   path: "/admin/info",
+    //   component: InfoAdmin,
+    // },
+    // {
+    //   exact: false,
+    //   path: "/admin/editCategory/:id",
+    //   component: EditCategory,
+    // },
+    // {
+    //   exact: false,
+    //   path: "/admin/editFood/:id",
+    //   component: UpdateFood,
+    // },
+    {
+      exact: false,
+      path: "/admin/accounts",
+      component: Accounts,
+    },
   ];
   export {RouteHome, RouteAdmin}

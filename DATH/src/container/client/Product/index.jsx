@@ -51,9 +51,9 @@ const Product = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProduct(chosen);
-  }, [chosen]);
+  // useEffect(() => {
+  //   fetchProduct(chosen);
+  // }, [chosen]);
 
   return loading === false ? (
     <>

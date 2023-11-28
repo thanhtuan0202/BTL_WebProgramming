@@ -5,50 +5,7 @@ import "./style.scss";
 import { Item, RemoveCart } from "./part";
 import { deleteCart } from "../../redux/Reducers/todoCart";
 import axios from "axios";
-// Call api
-const createPayment = async (body) => {
-  console.log("body: ",body);
-  try {
-    // const { data } = await axios({
-    //   method: "POST",
-    //   url: "http://localhost:5000/create-order",
-    //   data: body,
-    // });
-    const {data} = await axios .post(
-      "http://localhost:5000/create-order",
-      body
-    );
-    console.log(data)
-    return {
-      errCode: data.success,
-      errDetail: data.message,  
-    };
-  } catch (error) {
-    return {
-      errCode: false,
-      errDetail: "System error",
-      result: null,
-    };
-  }
-};
-const updProduct = async(body) => {
-  try {
-    const {data} = await axios .post(
-      "http://localhost:5000/update-product",
-      body
-    );
-    return {
-      errCode: data.success,
-      errDetail: data.message,  
-    };
-  } catch (error) {
-    return {
-      errCode: false,
-      errDetail: "System error",
-      result: null,
-    };
-  }  
-}
+
 function CheckoutCart(props) {
 
   const dispatch = useDispatch();
@@ -56,76 +13,40 @@ function CheckoutCart(props) {
   const listItemCart = useSelector((state) => state.todoCart.cartItem);
   const total = useSelector((state) => state.todoCart.total);
   const paymentMethod = useSelector((state) => state.paymentMethod.method);
-  console.log("payment-method: ", paymentMethod);
   useEffect(() => {}, [listItemCart]);
 
-  console.log("list carts: ", listItemCart);
-  const current = new Date();
-  const date = `${current.getFullYear()}-${current.getMonth()+1}-${current.getDate()}`;
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
   const [data, setData] = useState({
-    tenKhach : "",
-    SDT: "",
-    diaChi: "",
-    hinhThucThanhToan: "",
-    ngayTao: "",
-    idTaiKhoan: "1",
-    listProduct: [],    
+    fullname : "",
+    phone_number: "",
+    address: "",
+    payment_method: paymentMethod
   });
 
-  const onApprove = async (data, actions) => {
-    await handleSubmitOrder();
-    return actions.order.capture();
+  const handleChange = (name) => (event) => {
+    setData({ ...data, [name]: event.target.value });
+    console.log(data);
   };
-  const handleChangeName = (e) => {
-    // e.preventDefault();
-    setName(e.target.value);
-  };
-  const handleChangePhone = (e) => {
-    // e.preventDefault();
-    setPhone(e.target.value);
-  };
-  const handleChangeAddress = (e) => {
-    // e.preventDefault();
-    setAddress(e.target.value);
-  };
-  const handleSubmitOrder = async () => {
-    const items = listItemCart.map((item) => {
-      if (item.cartQuantity > item.soLuong){
-        item.cartQuantity = item.soLuong;
-      }
-      return [
-        item.id,
-        item.cartQuantity,
-      ];
-    });
-    Object.assign(data,{
-      tenKhach : name,
-      SDT: phone,
-      diaChi: address,
-      hinhThucThanhToan: paymentMethod,
-      ngayTao: date,
-      idTaiKhoan: "1",
-      listProduct: items,
-    })
 
-    const { errCode, errDetail } = await createPayment(data);
-    if (!errCode) {
-      return alert(errDetail);
+  const handleSubmitOrder = async () => {
+    if (data.fullname.trim() === '' || data.address.trim() === '' || data.phone_number.trim() === '') {
+      // Validation failed if rating is not given or comment is empty
+      alert('Vui lòng điền đầy đủ thông tin!');
+      return;
+  }
+    data.payment_method = paymentMethod;
+    try{
+      const res = await axios.post(
+        `http://localhost/assignment/backend/index.php/carts`,data,{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },}
+      );
+      alert(res.data.data.msg)
     }
-    listItemCart.map(async(item, index) => {
-      Object.assign(data, item)
-      data.soLuong = data.soLuong - data.cartQuantity;
-      const { errCode, errDetail } = await updProduct(data);
-      if (!errCode) {
-        return alert(errDetail);
-      }
-      console.log(errDetail);
-    })
-    dispatch(deleteCart());
-    alert("Thanh toán thành công");
+    catch(e){
+      alert("Error: " + e.message);
+    }
     return navigate("/");
   };
 
@@ -142,21 +63,21 @@ function CheckoutCart(props) {
               id="name"
               className="receiver__form-control mt-2"
               placeholder="Tên người nhận"
-              onChange={handleChangeName}
+              onChange={handleChange("fullname")}
             />
             <input
               type="text"
               id="phone"
               className="receiver__form-control mt-2"
               placeholder="Số điện thoại"
-              onChange={handleChangePhone}
+              onChange={handleChange("phone_number")}
             />
             <input
               type="text"
               id="address"
               className="receiver__form-control mt-2"
               placeholder="Địa chỉ người nhận"
-              onChange={handleChangeAddress}
+              onChange={handleChange("address")}
             />
           </div>
         </div>

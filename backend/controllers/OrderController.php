@@ -56,7 +56,7 @@ class OrderController
                 }
                 else if ($method == "POST") {
                     $input = (array) json_decode(file_get_contents('php://input'), true);
-                    $res = $this->model->addNewOrder($payload["user_id"],$input["address"],$input["phone_number"]);
+                    $res = $this->model->addNewOrder($payload["user_id"],$input["address"],$input["phone_number"],$input["payment_method"]);
                     $data = array(
                         'data' => $res
                     );
