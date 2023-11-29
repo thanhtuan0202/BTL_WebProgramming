@@ -12,8 +12,8 @@ export default function Products() {
       const res_pro = await axios.get(
         `http://localhost/assignment/backend/index.php/shoes?page=${page - 1}&limit=9`
       );
-      console.log("Product: ", res_pro.data.data);
       setProduct(res_pro.data.data);
+      console.log("Product: ", res_pro.data.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {
@@ -41,7 +41,7 @@ export default function Products() {
       </Link>
       <br />
       <br />
-      {product.shoes ? (
+      {(product && product.shoes) ? (
         <Grid container spacing={2}>
           {product.shoes.map((item, index) => (
             <Grid item xs={4}>

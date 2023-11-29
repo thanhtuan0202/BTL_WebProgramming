@@ -10,8 +10,9 @@ class ShoeController
   public function invoke($method, $parsed, $path, $token = null)
   {
     if ($method == 'GET') {
-      include_once('utils/utils.php');
+
       if (!isset($path[4])) {
+        
         //get for shoes?page=0&limit=10&sortby=price
         $query_lst = [];
         $error_lst = [];
@@ -19,18 +20,17 @@ class ShoeController
         if (!isset($query_lst['page'])) {
           $page = 0;
         } else {
-          if (isNumberID($query_lst['page']) || $query_lst['page'] == 0) {
+          if (is_numeric($query_lst['page'])) {
             $page = intval($query_lst['page']);
           } else {
             $res = ["msg" => "Must is number", "error-field" => "page field"];
             array_push($error_lst, $res);
           }
         }
-
         if (!isset($query_lst['limit'])) {
           $limit = 10;
         } else {
-          if (isNumberID($query_lst['limit'])) {
+          if (is_numeric($query_lst['limit'])) {
             $limit = intval($query_lst['limit']);
           } else {
             $res = ["msg" => "Must is number", "error-field" => "limit field"];
@@ -68,10 +68,22 @@ class ShoeController
           echo $json;
         } else {
           //query in model
-          $res = $this->model->getAllShoe($page, $limit, $sortby, $type);
-          $data = array(
-            'data' => array('shoes' => $res)
-          );
+          if ($token != null) {
+            include_once('utils/jwt.php');
+            $payload = decode_jwt($token)["payload"];
+            if($payload["role"] == "admin"){
+              $res = $this->model->getAllShoeAdmin($page, $limit, $sortby, $type);
+              $data = array(
+                'data' => $res
+              );
+            }
+          } 
+          else {
+            $res = $this->model->getAllShoe($page, $limit, $sortby, $type);
+            $data = array(
+              'data' => array('shoes' => $res)
+            );
+          }
           http_response_code(200);
           header('Content-Type: application/json');
           echo json_encode($data);
@@ -110,7 +122,7 @@ class ShoeController
         if (!isset($query_lst['page'])) {
           $page = 0;
         } else {
-          if (isNumberID($query_lst['page'])) {
+          if (is_numeric($query_lst['page'])) {
             $page = intval($query_lst['page']);
           } else {
             $res = ["msg" => "Must is number", "error-field" => "page field"];
@@ -121,7 +133,7 @@ class ShoeController
         if (!isset($query_lst['limit'])) {
           $limit = 10;
         } else {
-          if (isNumberID($query_lst['limit'])) {
+          if (is_numeric($query_lst['limit'])) {
             $limit = intval($query_lst['limit']);
           } else {
             $res = ["msg" => "Must is number", "error-field" => "limit field"];
@@ -204,7 +216,7 @@ class ShoeController
           if (!array_key_exists("image", $input)) {
             $input["image"] = "";
           }
-          $res = $this->model->addNewShoe($input['name'], $input["category_id"], $input["price"], $input["description"],$input["image"], $input["variant"]);
+          $res = $this->model->addNewShoe($input['name'], $input["category_id"], $input["price"], $input["description"], $input["image"], $input["variant"]);
           $data = array(
             'data' => $res
           );
@@ -213,9 +225,8 @@ class ShoeController
           echo json_encode($data);
         }
       }
-    }
-    else if($method == "PUT"){
-      if(isset($path[4])){
+    } else if ($method == "PUT") {
+      if (isset($path[4])) {
         $shoe_id = $path[4];
         if ($token == null) {
           $data = array(
@@ -241,7 +252,7 @@ class ShoeController
             if (!array_key_exists("image", $input)) {
               $input["image"] = "";
             }
-            $res = $this->model->changeShoeDetail($shoe_id, $input["price"], $input["description"],$input["image"]);
+            $res = $this->model->changeShoeDetail($shoe_id, $input["price"], $input["description"], $input["image"]);
             $data = array(
               'data' => $res
             );

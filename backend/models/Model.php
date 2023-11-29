@@ -26,7 +26,7 @@ class Model
             } else {
                 $res = $temp->fetch_assoc();
                 include_once("utils/jwt.php");
-                $token =  gen_jwt($res["username"],$res["user_id"],$res["name"]);
+                $token =  gen_jwt($res["username"], $res["user_id"], $res["name"]);
                 $res = array(
                     'token' => $token,
                     'user' => array(
@@ -118,7 +118,7 @@ class Model
     {
         try {
             $pre_stmt = $this->conn->prepare("update user set fullname = ?,email=?,dob=?,phone=?,gender=? where id = ?");
-            $pre_stmt->bind_param("sssssss", $fullname, $email,$dob, $phone, $gender, $user_id);
+            $pre_stmt->bind_param("sssssss", $fullname, $email, $dob, $phone, $gender, $user_id);
             $pre_stmt->execute();
             $res = ["success" => "Thay đổi thông tin thành công!"];
             return $res;
@@ -137,11 +137,10 @@ class Model
                 // output data of each row
                 $res = [];
                 while ($row = $stmt->fetch_assoc()) {
-                    array_push($res, new Category($row["id"],$row["name"]));
+                    array_push($res, new Category($row["id"], $row["name"]));
                 }
                 return $res;
-            }
-            else{
+            } else {
                 return ['error' => "Something went wrong!"];
             }
         } catch (Exception $e) {
@@ -167,12 +166,13 @@ class Model
 
     // Product Service 
 
-    public function getAllShoe($page,$limit,$sortby,$type){
-        try{
+    public function getAllShoe($page, $limit, $sortby, $type)
+    {
+        try {
             $query = "SELECT * FROM shoe ORDER BY $sortby $type LIMIT ? OFFSET ?";
             $pre_stmt = $this->conn->prepare($query);
             $offset = $limit * $page;
-            $pre_stmt->bind_param("ii",$limit,$offset);
+            $pre_stmt->bind_param("ii", $limit, $offset);
             $pre_stmt->execute();
             $tmp = $pre_stmt->get_result();
             if ($tmp->num_rows > 0) {
@@ -185,23 +185,65 @@ class Model
                     include_once("models/CommentModel.php");
                     $cmt = new CommentModel();
                     $star_avg = $cmt->calAvgStar($row["id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg));
+                    array_push($res, new Shoe($row["id"], $row["name"], $row["price"], $row["category_id"], $row["description"], $img_link, $star_avg));
                 }
                 return $res;
-            }
-            else{
+            } else {
                 return null;
             }
-        }
-        catch (Exception $e) {
-            return ['error'=> $e->getMessage()];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function getShoeById($id){
-        try{
+    public function getAllShoeAdmin($page, $limit, $sortby, $type)
+    {
+        try {
+            $sell = [];
+            $shoe_lst = $this->getAllShoe($page, $limit, $sortby, $type);
+            foreach ($shoe_lst as $item) {
+                $pid  = $item->id;
+                $stmt = $this->conn->prepare("select product_id, sum(quantity) as sum from cart_line cl, variant_product vp 
+                where vp.id = cl.vp_id and vp.product_id = ? and is_delete = true 
+                group by vp.product_id");
+                $stmt->bind_param("i", $pid);
+                $stmt->execute();
+                $tmp = $stmt->get_result();
+                if($tmp->num_rows > 0){
+                    while ($row = $tmp->fetch_assoc()) {
+                        array_push(
+                            $sell,
+                            array(
+                                "id" => $item->id,
+                                "sell" => $row["sum"]
+                            )
+                        );
+                    }
+                }
+                else{
+                    array_push(
+                        $sell,
+                        array(
+                            "id" => $pid,
+                            "sell" => 0
+                        )
+                    );
+                }
+            }
+            return array(
+                "shoes" => $shoe_lst,
+                "sells" => $sell
+            );
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    public function getShoeById($id)
+    {
+        try {
             $pre_stmt = $this->conn->prepare("SELECT * FROM shoe WHERE id = ?");
-            $pre_stmt->bind_param('s',$id);
+            $pre_stmt->bind_param('s', $id);
             $pre_stmt->execute();
             $tmp = $pre_stmt->get_result();
             if ($tmp->num_rows > 0) {
@@ -213,27 +255,26 @@ class Model
                     include_once("models/CommentModel.php");
                     $cmt = new CommentModel();
                     $star_avg = $cmt->calAvgStar($id);
-                    $res =  new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg);
+                    $res =  new Shoe($row["id"], $row["name"], $row["price"], $row["category_id"], $row["description"], $img_link, $star_avg);
                 }
                 return $res;
-            }
-            else{
+            } else {
                 return [];
-            }            
-        }
-        catch (Exception $e) {
-            return ['error'=> $e->getMessage()];
+            }
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function getShoeByCategory($category,$page,$limit,$sortby,$type){
-        try{
+    public function getShoeByCategory($category, $page, $limit, $sortby, $type)
+    {
+        try {
             // $pre_stmt = $this->conn->prepare('SELECT * FROM shoe WHERE category_id = ?  LIMIT ? OFFSET ? ORDER BY ? ?');
             // $offset = (int)$limit * (int)$page;
             $query = "SELECT * FROM shoe WHERE category_id = ? ORDER BY $sortby $type LIMIT ? OFFSET ?";
             $pre_stmt = $this->conn->prepare($query);
             $offset = $limit * $page;
-            $pre_stmt->bind_param('sss',$category,$limit,$offset);
+            $pre_stmt->bind_param('sss', $category, $limit, $offset);
             $pre_stmt->execute();
             $tmp = $pre_stmt->get_result();
             if ($tmp->num_rows > 0) {
@@ -246,21 +287,20 @@ class Model
                     include_once("models/CommentModel.php");
                     $cmt = new CommentModel();
                     $star_avg = $cmt->calAvgStar($row["id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg));
+                    array_push($res, new Shoe($row["id"], $row["name"], $row["price"], $row["category_id"], $row["description"], $img_link, $star_avg));
                 }
                 return $res;
-            }
-            else{
+            } else {
                 return null;
             }
-        }
-        catch (Exception $e){
-            return ['error'=> $e->getMessage()];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
-    
-    public function searchShoeByName(string $name){
-        try{
+
+    public function searchShoeByName(string $name)
+    {
+        try {
             $query = "SELECT * FROM shoe WHERE name LIKE '%$name%'";
             $stmt = $this->conn->query($query);
             if ($stmt->num_rows > 0) {
@@ -273,21 +313,20 @@ class Model
                     include_once("models/CommentModel.php");
                     $cmt = new CommentModel();
                     $star_avg = $cmt->calAvgStar($row["id"]);
-                    array_push($res, new Shoe($row["id"],$row["name"],$row["price"],$row["category_id"],$row["description"],$img_link,$star_avg));
+                    array_push($res, new Shoe($row["id"], $row["name"], $row["price"], $row["category_id"], $row["description"], $img_link, $star_avg));
                 }
                 return $res;
-            }
-            else{
+            } else {
                 return [];
             }
-        }
-        catch (Exception $e){
-            return ['error'=> $e->getMessage()];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function addNewShoe(string $name,int $category_id,int $price,string $description,string $base64,$variant){
-        try{
+    public function addNewShoe(string $name, int $category_id, int $price, string $description, string $base64, $variant)
+    {
+        try {
             include_once("utils/img_process.php");
             if (!empty($base64)) {
                 $image = new Image();
@@ -299,13 +338,13 @@ class Model
             }
             $query = "INSERT INTO shoe(name,category_id,price,create_at,img_id) values(?,?,?,now(),?)";
             $stmt = $this->conn->prepare($query);
-            $stmt->bind_param("siis",$name,$category_id,$price,$filename);
+            $stmt->bind_param("siis", $name, $category_id, $price, $filename);
             $stmt->execute();
             $shoe_id = $this->conn->insert_id;
-            foreach($variant as $item){
+            foreach ($variant as $item) {
                 $query = "INSERT INTO variant_product(color,size,model,in_stock,product_id) values(null,?,null,?,$shoe_id)";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("si", $item["size"],$item["in_stock"]);
+                $stmt->bind_param("si", $item["size"], $item["in_stock"]);
                 $stmt->execute();
                 $stmt->close();
             }
@@ -313,14 +352,14 @@ class Model
                 'success' => 'Thêm thành công!'
             );
             return $res;
-        }
-        catch (Exception $e){
-            return ['error'=> $e->getMessage()];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 
-    public function changeShoeDetail(int $shoe_id,int $price, string $description,string $base64){
-        try{
+    public function changeShoeDetail(int $shoe_id, int $price, string $description, string $base64)
+    {
+        try {
             include_once("utils/img_process.php");
             if (!empty($base64)) {
                 $image = new Image();
@@ -338,9 +377,8 @@ class Model
                 'success' => 'Chỉnh sửa thành công!'
             );
             return $res;
-        }
-        catch(Exception $e){
-            return ['error'=> $e->getMessage()];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 }

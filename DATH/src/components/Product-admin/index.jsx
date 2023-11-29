@@ -6,6 +6,7 @@ import StarIcon from "@mui/icons-material/Star";
 
 export default function ProductAdmin(props) {
   const item = props.data;
+  console.log(props.key);
   const linkToEdit = `/admin/editProduct/${item.id}`;
   return (
     <div className="">
