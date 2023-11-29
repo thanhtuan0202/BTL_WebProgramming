@@ -42,14 +42,18 @@ class OrderController
 
                     if($payload["role"] == "admin"){
                         $res = $this->model->getAllOrders($page, $status);
+                        $data = array(
+                            'data' => $res
+                        );
                     }
                     else{
                         $res = $this->model->getOrdersByUserId($payload["user_id"], $page);
+                        $data = array(
+                            'data' => array('order' => $res)
+                        );
                     }
 
-                    $data = array(
-                        'data' => array('order' => $res)
-                    );
+
                     http_response_code(200);
                     header('Content-Type: application/json');
                     echo json_encode($data);
@@ -66,8 +70,12 @@ class OrderController
                 }
     
             } else if (!isset($path[5])) {
-
-                $res = $this->model->getDetailOrder($path[4], $payload["user_id"]);
+                if($payload["role"] == "admin"){
+                    $res = $this->model->detailOrderAdmin($path[4]);
+                }
+                else{
+                    $res = $this->model->getDetailOrder($path[4], $payload["user_id"]);
+                }
                 $data = array(
                     'data' => array('order' => $res)
                 );

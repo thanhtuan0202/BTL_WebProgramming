@@ -8,15 +8,45 @@ class OrderModel{
         $this->conn = (new DBConnection())->getConn();
     }
 
+    public function analysis(){
+        try{
+            $stmt1 = $this->conn->query("SELECT count(id) as count,sum(total_price) as sum  FROM shopping.orders where status = 'done'");
+            if($stmt1->num_rows > 0){
+                $res1 = $stmt1->fetch_assoc();
+            }
+            $stmt2 = $this->conn->query("SELECT count(id) as count,sum(total_price) as sum  FROM shopping.orders where status = 'waiting'");
+            if($stmt2->num_rows > 0){
+                $res2 = $stmt2->fetch_assoc();
+            }
+            $stmt3 = $this->conn->query("SELECT count(id) as count,sum(total_price) as sum  FROM shopping.orders where status = 'delete'");
+            if($stmt3->num_rows > 0){
+                $res3 = $stmt3->fetch_assoc();
+            }
+            $stmt4 = $this->conn->query("SELECT count(id) as count,sum(total_price) as sum  FROM shopping.orders where status = 'on-delivery'");
+            if($stmt4->num_rows > 0){
+                $res4 = $stmt4->fetch_assoc();
+            }
+            return array(
+                'sum' => round($res1["sum"],2),
+                'done' => $res1["count"],
+                'waiting' => $res2["count"],
+                'delete' => $res3["count"],
+                'delivery' => $res4["count"]
+            );
+        }
+        catch(Exception $e){
+            return ["error"=> $e->getMessage()];
+        }
+    }
     public function getAllOrders($page,$status){
         try{
-            $offset = ($page - 1) * 5;
+            $offset = ($page - 1) * 10;
             if($status == null){
-                $stmt = $this->conn->prepare("SELECT * FROM orders ORDER BY create_at DESC LIMIT 5 OFFSET ?");
+                $stmt = $this->conn->prepare("SELECT * FROM orders ORDER BY create_at DESC LIMIT 10 OFFSET ?");
                 $stmt->bind_param("s",$offset);
             }
             else{
-                $stmt = $this->conn->prepare("SELECT * FROM orders WHERE status = ? ORDER BY create_at DESC LIMIT 5 OFFSET ?");
+                $stmt = $this->conn->prepare("SELECT * FROM orders WHERE status = ? ORDER BY create_at DESC LIMIT 10 OFFSET ?");
                 $stmt->bind_param("ss",$status,$offset);
             }
             
@@ -25,9 +55,15 @@ class OrderModel{
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
-                    array_push($res, new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],null,$row["delivery_time"]));
+                    array_push($res, 
+                    new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],$row["phone_number"],$row["payment_method"],null,
+                    $row["delivery_time"])
+                );
                 }
-                return $res;
+                return array(
+                    'order' => $res,
+                    'analyst' => $this->analysis()
+                );
             }
             else{
                 return [];
@@ -40,15 +76,15 @@ class OrderModel{
 
     public function getOrdersByUserId($page, $user_id){
         try{
-            $offset = ($page - 1) * 5;
-            $stmt = $this->conn->prepare("SELECT * FROM orders where user_id = ? ORDER BY create_at DESC LIMIT 5 OFFSET ?");
+            $offset = ($page - 1) * 10;
+            $stmt = $this->conn->prepare("SELECT * FROM orders where user_id = ? ORDER BY create_at DESC LIMIT 10 OFFSET ?");
             $stmt->bind_param("ss",$user_id,$offset);
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
-                    array_push($res, new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],null,$row["delivery_time"]));
+                    array_push($res, new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],$row["phone_number"],$row["payment_method"],null,$row["delivery_time"]));
                 }
                 return $res;
             }
@@ -60,7 +96,31 @@ class OrderModel{
             return ["error"=> $e->getMessage()];
         }  
     }
-
+    public function detailOrderAdmin($order_id){
+        try{
+            //query order infomation
+            $stmt = $this->conn->prepare("SELECT * FROM orders WHERE id = ?");
+            $stmt->bind_param("i",$order_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if($result->num_rows > 0){
+                while($row = $result->fetch_assoc()){
+                    $order_info = $row;
+                }
+            }
+            else{
+                return null;
+            }
+            include_once("models/CartModel.php");
+            $cart_model = new CartModel();
+            $item_lst = $cart_model->getItemsByOrder($order_id);
+            return new Order($order_info["id"],$order_info["address"],$order_info["total_price"],$order_info["create_at"],
+                $order_info["status"],$order_info["user_id"],$row["phone_number"],$row["payment_method"],$item_lst,$order_info["delivery_time"]);
+        }
+        catch(Exception $e){
+            return ["error"=> $e->getMessage()];
+        }
+    }
     public function getDetailOrder($order_id,$user_id){
         try{
             //query order infomation
@@ -80,7 +140,7 @@ class OrderModel{
             $cart_model = new CartModel();
             $item_lst = $cart_model->getItemsByOrder($order_id);
             return new Order($order_info["id"],$order_info["address"],$order_info["total_price"],$order_info["create_at"],
-                $order_info["status"],$order_info["user_id"],$item_lst,$order_info["delivery_time"]);
+                $order_info["status"],$order_info["user_id"],$row["phone_number"],$row["payment_method"],$item_lst,$order_info["delivery_time"]);
         }
         catch(Exception $e){
             return ["error"=> $e->getMessage()];

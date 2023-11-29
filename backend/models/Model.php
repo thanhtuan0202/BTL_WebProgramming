@@ -303,9 +303,9 @@ class Model
             $stmt->execute();
             $shoe_id = $this->conn->insert_id;
             foreach($variant as $item){
-                $query = "INSERT INTO variant_product(color,size,model,in_stock,product_id) values(?,?,?,?,$shoe_id)";
+                $query = "INSERT INTO variant_product(color,size,model,in_stock,product_id) values(null,?,null,?,$shoe_id)";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("sssi", $item["color"],$item["size"],$item["model"],$item["in_stock"]);
+                $stmt->bind_param("si", $item["size"],$item["in_stock"]);
                 $stmt->execute();
                 $stmt->close();
             }

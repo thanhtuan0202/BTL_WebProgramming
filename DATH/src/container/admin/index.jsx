@@ -14,7 +14,7 @@ function LayoutAdmin(props) {
         }}
       >
         <Topnav />
-        <div style={{padding: "30px"}}>
+        <div style={{padding: "10px"}}>
           {props.children}
         </div>
       </div>

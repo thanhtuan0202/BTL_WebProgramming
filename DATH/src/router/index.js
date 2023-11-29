@@ -15,6 +15,7 @@ import Orders from "../container/admin/pages/Orders";
 import Categories from "../container/admin/pages/Categories";
 import Products from "../container/admin/pages/Products";
 import Accounts from "../container/admin/pages/Accounts";
+import UpdateProduct from "../container/admin/pages/UpdateProduct";
 const RouteHome = [
     {
       exact: true,
@@ -94,6 +95,11 @@ const RouteHome = [
       path: "/admin/products",
       component: Products,
     },
+    {
+      exact: false,
+      path: "/admin/addProducts",
+      component: UpdateProduct,
+    },
     // {
     //   exact: false,
     //   path: "/admin/settings",
@@ -114,11 +120,11 @@ const RouteHome = [
     //   path: "/admin/editCategory/:id",
     //   component: EditCategory,
     // },
-    // {
-    //   exact: false,
-    //   path: "/admin/editFood/:id",
-    //   component: UpdateFood,
-    // },
+    {
+      exact: false,
+      path: "/admin/editProduct/:id",
+      component: UpdateProduct,
+    },
     {
       exact: false,
       path: "/admin/accounts",

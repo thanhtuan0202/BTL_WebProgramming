@@ -19,7 +19,7 @@ class ShoeController
         if (!isset($query_lst['page'])) {
           $page = 0;
         } else {
-          if (isNumberID($query_lst['page'])) {
+          if (isNumberID($query_lst['page']) || $query_lst['page'] == 0) {
             $page = intval($query_lst['page']);
           } else {
             $res = ["msg" => "Must is number", "error-field" => "page field"];

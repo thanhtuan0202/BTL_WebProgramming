@@ -24,10 +24,5 @@ export const item = [
       "route": "/admin/settings",
       "icon": "bx bx-cog"
     },
-    {
-      "display_name": "Cài đặt khác",
-      "route": "/admin/anothersettings",
-      "icon": "bx bx-cog"
-    }
   ]
   
