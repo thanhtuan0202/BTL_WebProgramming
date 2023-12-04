@@ -180,7 +180,7 @@ class OrderModel{
                 $stmt->execute();
                 $id = $this->conn->insert_id;
                 
-                $query = "UPDATE cart_line SET is_delete = 1 and order_id = $id WHERE user_id = $user_id";
+                $query = "UPDATE cart_line SET is_delete = 1 and order_id = $id WHERE user_id = $user_id and is_delete = 0";
                 $stmt = $this->conn->prepare($query);
                 $stmt->execute();
 

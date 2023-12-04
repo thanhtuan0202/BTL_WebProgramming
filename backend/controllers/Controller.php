@@ -1,6 +1,20 @@
 <?php
 
 class Controller{
+    
+    function getImageAsBase64($imageUrl) {
+        // Fetch the image from the URL
+
+        $type = pathinfo($imageUrl, PATHINFO_EXTENSION);
+        $imageData = file_get_contents($imageUrl);  
+        
+        if ($imageData !== false) {
+            // Convert the image data to base64
+            return 'data:image/' . $type . ';base64,' . base64_encode($imageData);
+        } else {
+            return false;
+        }
+    }
     public function invoke($method, $parsed,$token){
         $path = $parsed['path'];
         $pathElements = explode('/', trim($path, '/'));
@@ -57,6 +71,20 @@ class Controller{
                 include_once("OrderController.php");
                 $orderController = new OrderController();
                 $orderController->invoke($method,$parsed,$pathElements,$token);
+            }
+            else if($pathElements[3] === 'image'){
+                $query_lst = [];
+                parse_str($parsed['query'], $query_lst);
+                if (isset($query_lst["url"])) {
+                    $imageBase64 = $this->getImageAsBase64($query_lst["url"]);
+                    if ($imageBase64 !== false) {
+                        // Return the base64 encoded image data
+                        echo json_encode(array('base64data' => $imageBase64));
+                    } else {
+                        // If image fetching failed, return an error
+                        echo json_encode(array('error' => 'Failed to fetch the image.'));
+                    }
+                }
             }
         }
         else{

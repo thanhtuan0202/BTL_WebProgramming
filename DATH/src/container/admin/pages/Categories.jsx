@@ -38,7 +38,7 @@ export default function Categories() {
     <Loader />
   ) : (
     <div>
-      <h2> Catogory page</h2>
+      <h2> Quản lí</h2>
       <br />
       <TableContainer component={Paper}>
         <Table>
@@ -46,42 +46,22 @@ export default function Categories() {
             <TableRow>
               <TableCell>Id</TableCell>
               <TableCell>Tên</TableCell>
+              <TableCell>Mô tả</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
-          {/* <TableBody>
-            {orders.order.map((item, index) => {
-              const status = mappingStatus(item.status);
+          <TableBody>
+            {category.categories.map((item, index) => {
               return (
                 <TableRow>
-                  <TableCell>{item.user_id}</TableCell>
-                  <TableCell>{item.address}</TableCell>
-                  <TableCell>{item.phone_number}</TableCell>
-                  <TableCell>{item.total_price}</TableCell>
-                  <TableCell>{item.payment_method}</TableCell>
-                  <TableCell>{item.create_at}</TableCell>
-                  <TableCell>{item.delivery_time}</TableCell>
-                  <TableCell style={{ color: `${status.color}` }}>
-                    {status.msg}
-                  </TableCell>
-                  <TableCell>
-                    {item.status == "done" ? (
-                      " "
-                    ) : (
-                      <div>
-                        <Link
-                          to={`/user-manager/editPost/${item.id}`}
-                          state={{ item }}
-                        >
-                          <EditNoteIcon />
-                        </Link>
-                      </div>
-                    )}
-                  </TableCell>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               );
             })}
-          </TableBody> */}
+          </TableBody>
         </Table>
       </TableContainer>
     </div>

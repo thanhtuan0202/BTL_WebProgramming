@@ -336,13 +336,13 @@ class Model
                     return $res;
                 }
             }
-            $query = "INSERT INTO shoe(name,category_id,price,create_at,img_id) values(?,?,?,now(),?)";
+            $query = "INSERT INTO shoe(name,category_id,price,create_at,img_id,description) values(?,?,?,now(),?,?)";
             $stmt = $this->conn->prepare($query);
-            $stmt->bind_param("siis", $name, $category_id, $price, $filename);
+            $stmt->bind_param("siiss", $name, $category_id, $price, $filename,$description);
             $stmt->execute();
             $shoe_id = $this->conn->insert_id;
             foreach ($variant as $item) {
-                $query = "INSERT INTO variant_product(color,size,model,in_stock,product_id) values(null,?,null,?,$shoe_id)";
+                $query = "INSERT INTO variant_product(color,size,model,in_stock,product_id) values('black',?,'2023',?,$shoe_id)";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bind_param("si", $item["size"], $item["in_stock"]);
                 $stmt->execute();
@@ -357,7 +357,7 @@ class Model
         }
     }
 
-    public function changeShoeDetail(int $shoe_id, int $price, string $description, string $base64)
+    public function changeShoeDetail(int $shoe_id, int $price, string $description, string $base64, $variant)
     {
         try {
             include_once("utils/img_process.php");

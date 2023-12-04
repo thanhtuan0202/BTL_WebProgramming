@@ -115,7 +115,7 @@ class ShoeController
         }
       } else if (!isset($path[6])) {
         //get for shoes/category/category_id
-
+        
         $query_lst = [];
         $error_lst = [];
         parse_str($path['query'], $query_lst);
@@ -160,8 +160,7 @@ class ShoeController
             array_push($error_lst, $res);
           }
         }
-
-        if (!isNumberID($path[5])) {
+        if (!is_numeric($path[5])) {
           $res = ["msg" => "Must is number", "error-field" => "category id"];
           array_push($error_lst, $res);
         }
@@ -177,7 +176,7 @@ class ShoeController
           //error input value
         } else {
           //query in model
-
+          
           $res = $this->model->getShoeByCategory($path[5], $page, $limit, $sortby, $type);
           if ($res == null) {
             echo $res;
@@ -252,7 +251,7 @@ class ShoeController
             if (!array_key_exists("image", $input)) {
               $input["image"] = "";
             }
-            $res = $this->model->changeShoeDetail($shoe_id, $input["price"], $input["description"], $input["image"]);
+            $res = $this->model->changeShoeDetail($shoe_id, $input["price"], $input["description"], $input["image"], $input["variants"]);
             $data = array(
               'data' => $res
             );

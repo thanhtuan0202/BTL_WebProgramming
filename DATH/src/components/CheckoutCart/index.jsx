@@ -14,7 +14,7 @@ function CheckoutCart(props) {
   const total = useSelector((state) => state.todoCart.total);
   const paymentMethod = useSelector((state) => state.paymentMethod.method);
   useEffect(() => {}, [listItemCart]);
-
+  const token = localStorage.getItem('token');
   const [data, setData] = useState({
     fullname : "",
     phone_number: "",
@@ -36,13 +36,21 @@ function CheckoutCart(props) {
     data.payment_method = paymentMethod;
     try{
       const res = await axios.post(
-        `http://localhost/assignment/backend/index.php/carts`,data,{
+        `http://localhost/assignment/backend/index.php/orders`,data,{
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },}
       );
-      alert(res.data.data.msg)
+      console.log(res.data);
+      if(res.data.data.error){
+        alert(res.data.data.error);
+      }
+      else{
+        alert(res.data.data.msg)
+      }
+
+
     }
     catch(e){
       alert("Error: " + e.message);

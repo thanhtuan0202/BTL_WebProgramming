@@ -38,10 +38,12 @@ class CommentController
                     'data' => array('comments' => $res)
                 );
             } else {
-                $res = $this->model->getAllComments($page);
-                $data = array(
-                    'data' => array('comments' => $res)
-                );
+                if($payload["role"] == "admin"){
+                    $res = $this->model->getAllComments($page);
+                    $data = array(
+                        'data' => array('comments' => $res)
+                    );
+                }
             }
             http_response_code(200);
             header('Content-Type: application/json');

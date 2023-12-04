@@ -27,6 +27,8 @@ const Comment = (props) => {
   const handleRatingChange = (event, newValue) => {
     setNewRating(newValue);
   };
+
+  
   const handleAddComment = async () => {
     if (newRating === 0 || newComment.trim() === '') {
         // Validation failed if rating is not given or comment is empty

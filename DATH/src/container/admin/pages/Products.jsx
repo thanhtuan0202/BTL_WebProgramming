@@ -4,16 +4,27 @@ import axios from "axios";
 import { Grid, Button, Pagination } from "@mui/material";
 import { Link } from "react-router-dom";
 import ProductAdmin from "../../../components/Product-admin";
+
+
+
 export default function Products() {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState([]);
+  const token =
+    "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDEyNzgzNzAsInVzZXJfbmFtZSI6ImpvaG5kb2UiLCJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.KJzBWA-T3YI3fJPXNx0w5Iv9NyQUGXHqcG9uZ3acJ_54MlIZ0T0AUc-9e2aZNB7fvRdlwU8U1uMCG2aiXK5JmQ";
+  
   const fetchProduct = async (page) => {
     try {
       const res_pro = await axios.get(
-        `http://localhost/assignment/backend/index.php/shoes?page=${page - 1}&limit=9`
+        `http://localhost/assignment/backend/index.php/shoes?page=${page - 1}&limit=9`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setProduct(res_pro.data.data);
-      console.log("Product: ", res_pro.data.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     } finally {

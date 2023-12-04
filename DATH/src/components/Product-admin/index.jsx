@@ -8,6 +8,11 @@ export default function ProductAdmin(props) {
   const item = props.data;
   console.log(props.key);
   const linkToEdit = `/admin/editProduct/${item.id}`;
+  const linkToDetail = `/product/detail/${item.id}`;
+  var formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'VND'
+  }); 
   return (
     <div className="">
       <div className="food-card">
@@ -18,7 +23,7 @@ export default function ProductAdmin(props) {
           <div className="food-card_title-section overflow-hidden">
             <h4 className="food-card_title">
               <a href="#!" className="text-dark">
-                <Link to={linkToEdit} key={item.id} state={{item}}>
+                <Link to={linkToDetail} key={item.id} state={{item}}>
                   {" "}
                   {item.name}{" "}
                 </Link>
@@ -32,7 +37,7 @@ export default function ProductAdmin(props) {
             >
               <div>
                 {" "}
-                Giá:<span> {item.price + " $"}</span>
+                Giá:<span> {formatter.format(item.price) }</span>
               </div>
               <div>
                 <p>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../../../components/Loader";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { TextField, Select, MenuItem, Button } from "@mui/material";
+import { TextField, Select, MenuItem, Button, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-
+import DeleteIcon from "@mui/icons-material/Delete";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -19,11 +19,58 @@ const VisuallyHiddenInput = styled("input")({
 });
 export default function UpdateProduct() {
   const [loading, setLoading] = useState(true);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [variant, setVariant] = useState([]);
+  const [fields, setFields] = useState([]);
+  const [variantItem, setVariantItem] = useState({
+    size: 0,
+    in_stock: 0,
+  });
   let { state } = useLocation();
   let isUpdate = false;
+  const navigate = useNavigate();
+
   if (state && state.item) {
     isUpdate = true;
+
+    const fetchVariant = async (page) => {
+      try {
+        const res = await axios.get(
+          `http://localhost/assignment/backend/index.php/image?url=${encodeURIComponent(
+            state.item.img_file
+          )}`
+        );
+        setSelectedFile({ file: "1", base64Url: res.data.base64data });
+
+        const res_variant = await axios.get(
+          `http://localhost/assignment/backend/index.php/variants/${state.item.id}`
+        );
+        let arr = [];
+        let const_field = [];
+        res_variant.data.data.variants.forEach((element,index) => {
+          arr.push({
+            size: element.size,
+            in_stock: element.in_stock,
+          });
+          const_field.push({
+            id: index,
+          })
+        });
+        setVariant(arr);
+        setFields(const_field);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchVariant(1);
+    }, []);
   }
+  const token =
+    "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDEyNzgzNzAsInVzZXJfbmFtZSI6ImpvaG5kb2UiLCJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.KJzBWA-T3YI3fJPXNx0w5Iv9NyQUGXHqcG9uZ3acJ_54MlIZ0T0AUc-9e2aZNB7fvRdlwU8U1uMCG2aiXK5JmQ";
 
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState(
@@ -41,7 +88,6 @@ export default function UpdateProduct() {
           `http://localhost/assignment/backend/index.php/shoes/${state.item.id}`
         );
         setShoe(res1.data.data);
-        console.log("shoe: ", shoe);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -53,7 +99,6 @@ export default function UpdateProduct() {
   useEffect(() => {
     fetchCategory();
   }, []);
-  const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0]; // Only the first file is considered
@@ -77,16 +122,87 @@ export default function UpdateProduct() {
     variant: [],
   });
 
+  const handleVariantItem = (name) => (event) => {
+    setVariantItem({ ...variantItem, [name]: event.target.value });
+  };
   const handleChange = (name) => (e) => {
     setValues({ ...values, [name]: e.target.value });
     console.log(values);
   };
 
-  const handleSubmit = () => {
-    values.image = selectedFile.base64Url;
-    console.log(values);
-  }
+  const addTextFields = () => {
+    if (variantItem.size >= 35 && variantItem.size <= 43) {
+      variant.push(variantItem);
+      console.log("variant ", variant);
 
+      setVariantItem({
+        size: 0,
+        in_stock: 0,
+      });
+    }
+    const newFields = [
+      ...fields,
+      {
+        id: fields.length,
+      },
+    ];
+    setFields(newFields);
+  };
+
+  const removeTextFields = (idx) => {
+    const field = [...fields];
+    field.splice(idx, 1);
+    if (idx + 1 <= variant.length) {
+      // const newVariant = {...variant}
+      // newVariant.splice(idx, 1);
+      // setVariant(newVariant);
+      variant.splice(idx, 1);
+    }
+    setFields(field);
+  };
+  const handleSubmit = async () => {
+    values.image = selectedFile.base64Url;
+    values.variant = variant;
+    values.category_id = values.category_id + 1;
+    console.log(values);
+    try {
+      await axios
+        .post("http://localhost/assignment/backend/index.php/shoes", values, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+        });
+      alert("Thành công");
+      navigate("/admin/products");
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    values.image = selectedFile.base64Url;
+    values.variant = variant;
+    values.category_id = values.category_id + 1;
+    console.log(values);
+    try {
+      await axios
+        .put("http://localhost/assignment/backend/index.php/shoes", values, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {});
+      alert("Thành công");
+      navigate("/admin/products");
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
   return loading === true ? (
     <Loader />
   ) : (
@@ -114,7 +230,7 @@ export default function UpdateProduct() {
           onChange={handleChange("description")}
         />
       </div>
-    <br />
+      <br />
       <div>
         <TextField
           label="Giá bán"
@@ -131,11 +247,7 @@ export default function UpdateProduct() {
           value={category}
           label="Loại giày"
           onChange={handleChange("category_id")}
-          style={{minWidth: "200px"}}
-          // onChange={(e) => {
-          //   setCategory(e.target.value);
-          //   console.log(category);
-          // }}
+          style={{ minWidth: "200px" }}
         >
           {categories.map((item, idx) => (
             <MenuItem
@@ -150,9 +262,51 @@ export default function UpdateProduct() {
           ))}
         </Select>
       </div>
+      <div>
+        <div style={{ fontFamily: "bolder" }}> Size và số lượng: </div>
+        <div>
+          {fields.map((field, idx) => (
+            <div style={{ margin: "10px 0px" }}>
+              <TextField
+                label="Size"
+                placeholder={"Nhập size"}
+                variant="outlined"
+                onChange={handleVariantItem("size")}
+                defaultValue={
+                  variant[idx] && variant[idx].size ? variant[idx].size : null
+                }
+                style={{ marginRight: "10px" }}
+              />
+              <TextField
+                label="Số lượng"
+                placeholder={"Số lượng của size " + variantItem.size}
+                variant="outlined"
+                defaultValue={
+                  variant[idx] && variant[idx].in_stock
+                    ? variant[idx].in_stock
+                    : null
+                }
+                onChange={handleVariantItem("in_stock")}
+              />
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  removeTextFields(idx);
+                }}
+              >
+                <DeleteIcon />
+              </Button>
+            </div>
+          ))}
+          <Button variant="contained" color="primary" onClick={addTextFields}>
+            Thêm
+          </Button>
+        </div>
+      </div>
       <br />
       <div>
-        <div style={{ fontFamily: "bolder" }}>
+        <div style={{ fontFamily: "bolder", marginBottom: "10px" }}>
           {" "}
           Hình ảnh
         </div>
@@ -182,12 +336,12 @@ export default function UpdateProduct() {
       <br />
       {isUpdate ? (
         <div>
-          <Button onClick={handleSubmit}> Lưu thay đổi</Button>
+          <Button onClick={handleUpdate}> Lưu thay đổi</Button>
         </div>
       ) : (
         <div>
-        <Button onClick={handleSubmit}> Thêm sản phẩm</Button>
-      </div>
+          <Button onClick={handleSubmit}> Thêm sản phẩm</Button>
+        </div>
       )}
     </div>
   );

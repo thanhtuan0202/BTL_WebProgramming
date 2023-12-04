@@ -12,7 +12,7 @@ class CommentModel{
     public function getCommentOfShoe($shoe_id, $page){
         try{
             $offset = ($page - 1) * 5;
-            $stmt = $this->conn->prepare("SELECT * FROM comment cmt,user usr
+            $stmt = $this->conn->prepare("SELECT cmt.id as id,content,star,fullname,shoe.name,cmt.create_at,shoe.id as sid FROM comment cmt,user usr, shoe shoe
             where cmt.sender_id = usr.id and shoe_id = ?
             ORDER BY create_at DESC LIMIT 10 OFFSET ?");
             $stmt->bind_param("ss",$shoe_id,$offset);
@@ -21,7 +21,7 @@ class CommentModel{
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
-                    array_push($res, new Comment($row["id"],$row["content"],$row["star"],$row["fullname"],$row["shoe_id"],$row["create_at"]));
+                    array_push($res, new Comment($row["id"],$row["content"],$row["star"],$row["fullname"],$row["sid"],$row["name"],$row["create_at"]));
                 }
                 return $res;
             }
@@ -53,8 +53,8 @@ class CommentModel{
     public function getAllComments($page){
         try{
             $offset = ($page - 1) * 5;
-            $stmt = $this->conn->prepare("SELECT * FROM comment cmt,user usr
-            where cmt.sender_id = usr.id
+            $stmt = $this->conn->prepare("SELECT cmt.id as id,content,star,fullname,shoe.name,cmt.create_at,shoe.id as sid FROM comment cmt,user usr, shoe shoe
+            where cmt.sender_id = usr.id and shoe.id = cmt.shoe_id
             ORDER BY create_at DESC LIMIT 10 OFFSET ?");
             $stmt->bind_param("s",$offset);
             $stmt->execute();
@@ -62,7 +62,7 @@ class CommentModel{
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
-                    array_push($res, new Comment($row["id"],$row["content"],$row["star"],$row["sender_id"],$row["shoe_id"],$row["create_at"]));
+                    array_push($res, new Comment($row["id"],$row["content"],$row["star"],$row["fullname"],$row["sid"],$row["name"],$row["create_at"]));
                 }
                 return $res;
             }

@@ -15,6 +15,7 @@ import Orders from "../container/admin/pages/Orders";
 import Categories from "../container/admin/pages/Categories";
 import Products from "../container/admin/pages/Products";
 import Accounts from "../container/admin/pages/Accounts";
+import Comments from "../container/admin/pages/Comment";
 import UpdateProduct from "../container/admin/pages/UpdateProduct";
 const RouteHome = [
     {
@@ -100,11 +101,11 @@ const RouteHome = [
       path: "/admin/addProducts",
       component: UpdateProduct,
     },
-    // {
-    //   exact: false,
-    //   path: "/admin/settings",
-    //   component: Settings,
-    // },
+    {
+      exact: false,
+      path: "/admin/comments",
+      component: Comments,
+    },
     // {
     //   exact: false,
     //   path: "/admin/anothersettings",
