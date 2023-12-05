@@ -1,7 +1,7 @@
 
 import HomePage from "../container/client/Homepage"
 import Checkout from "../container/client/Checkout"
-import Order from "../container/client/Order"
+import Order from "../container/client/CartPage"
 import DetailProduct from "../container/client/DetailProduct";
 import Product from "../container/client/Product";
 import Login from "../container/client/Login";
@@ -17,6 +17,7 @@ import Products from "../container/admin/pages/Products";
 import Accounts from "../container/admin/pages/Accounts";
 import Comments from "../container/admin/pages/Comment";
 import UpdateProduct from "../container/admin/pages/UpdateProduct";
+import OrderHistory from "../container/client/OrderHistory";
 const RouteHome = [
     {
       exact: true,
@@ -64,6 +65,12 @@ const RouteHome = [
       exact: false,
       path: "/descript",
       component: Descript,
+      layout: "default",
+    },    
+    {
+      exact: false,
+      path: "/order",
+      component: OrderHistory,
       layout: "default",
     },
     {

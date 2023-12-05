@@ -15,7 +15,15 @@ import {
 } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Link } from "react-router-dom";
+
 export default function Orders() {
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  const togglePopup = () => {
+    setShowPopup(!showPopup);
+  };
+
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState(null);
@@ -93,15 +101,20 @@ export default function Orders() {
       };
     }
   };
-  const handlePage = (e, value) => {
-    fetchOrder(value, status);
-  };
+
   return loading === true ? (
     <Loader />
   ) : (
     <div style={{ backgroundColor: "white" }}>
       <h1> Quản lý đơn hàng</h1>
       <br />
+      <div>
+        {showPopup && (
+          <div>
+
+          </div>
+        )}
+      </div>
       <Grid container spacing={2}>
         <Grid item xs={3} color="black">
           <Link
@@ -195,9 +208,7 @@ export default function Orders() {
                       " "
                     ) : (
                       <div>
-                        <Link
-                          to={`/user-manager/editPost/${item.id}`}
-                          state={{ item }}
+                        <Link onClick={togglePopup}
                         >
                           <EditNoteIcon />
                         </Link>

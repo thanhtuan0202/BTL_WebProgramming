@@ -74,7 +74,7 @@ class OrderModel{
         }
     }
 
-    public function getOrdersByUserId($page, $user_id){
+    public function getOrdersByUserId($user_id,$page){
         try{
             $offset = ($page - 1) * 10;
             $stmt = $this->conn->prepare("SELECT * FROM orders where user_id = ? ORDER BY create_at DESC LIMIT 10 OFFSET ?");
@@ -84,7 +84,10 @@ class OrderModel{
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
-                    array_push($res, new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],$row["phone_number"],$row["payment_method"],null,$row["delivery_time"]));
+                    include_once("models/CartModel.php");
+                    $cart_model = new CartModel();
+                    $item_lst = $cart_model->getItemsByOrder($row["id"]);
+                    array_push($res, new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],$row["phone_number"],$row["payment_method"],$item_lst,$row["delivery_time"]));
                 }
                 return $res;
             }
@@ -160,6 +163,7 @@ class OrderModel{
     public function addNewOrder($user_id,$address,$phone_number,$payment){
         try{
             include_once("models/CartModel.php");
+            include_once("models/Cart.php");
             $cart = new CartModel();
             $cart_item = $cart->getCartItems($user_id);
             
@@ -170,19 +174,14 @@ class OrderModel{
                 return $res;
             }
             else{
-                $total_price = 0;
-                foreach($cart_item as $item){
-                    $total_price += $item->total_price;
-                }
                 $query = "INSERT INTO orders (user_id,address,phone_number,total_price,payment_method,create_at) values ($user_id,?,?,?,?,now())";
                 $stmt = $this->conn->prepare($query);
-                $stmt->bind_param("ssss", $address,$phone_number,$total_price,$payment);
+                $stmt->bind_param("ssss", $address,$phone_number,$cart_item["total_price"],$payment);
                 $stmt->execute();
                 $id = $this->conn->insert_id;
                 
-                $query = "UPDATE cart_line SET is_delete = 1 and order_id = $id WHERE user_id = $user_id and is_delete = 0";
-                $stmt = $this->conn->prepare($query);
-                $stmt->execute();
+                $query = "UPDATE cart_line SET is_delete = 1, order_id = $id WHERE user_id = $user_id and is_delete = 0";
+                $stmt = $this->conn->query($query);
 
                 $res = array(
                     'msg' => 'Thêm thành công!'
@@ -196,6 +195,26 @@ class OrderModel{
         }
     }
 
+    public function changeStatusOfOrder($order, $status, $role, $user_id = null){
+        try{
+            if($role == "admin"){
+                $query = "UPDATE orders SET status = ? WHERE id = $order";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$status);
+                $stmt->execute();
+            }
+            else if($role == "customer"){
+                $query = "UPDATE orders SET status = ? WHERE user_id = $user_id and id = $order";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param("s",$status);
+                $stmt->execute();
+            }
+            return ["success" => "Thay đổi thành công!"];
+        }
+        catch(Exception $e){
+            return ["error"=> $e->getMessage()];
+        }
+    }
     // public function addNewOrderWithSpecificProduct($user_id,$address,$phone_number,$vp_id){
     //     try{
             

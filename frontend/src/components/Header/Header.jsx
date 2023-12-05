@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import logo from "../../assets/products/logoBK.png";
 import "./navbar.css";
-import { Button } from "@mui/material";
+import { Button, Menu, MenuItem,Fade } from "@mui/material";
 import { delLoginAction } from "./../../redux/Reducers/loginUser";
 
 function Header() {
@@ -27,7 +27,14 @@ function Header() {
   const handleSearch = (e) => {
     navigate("/search", {state: {q: name}});
   };
-
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   return (
     <nav class="navbar fixed-top navbar-expand-lg header" id="mainNavbar">
       <div class="container-fluid d-flex order-lg-1 header-item">
@@ -82,21 +89,41 @@ function Header() {
             </Link>
           </div>
           <div>
-            <Link to={user ? "/user" : "/login"} className="link">
+          {user ? (
+            <div>
+            <Button
+              id="fade-button"
+              aria-controls={open ? 'fade-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleClick}
+            >
+              {user.name}
+            </Button>
+            <Menu
+              id="fade-menu"
+              MenuListProps={{
+                'aria-labelledby': 'fade-button',
+              }}
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              TransitionComponent={Fade}
+            >
+              <MenuItem onClick={() => {navigate("/user")}}>Thông tin cá nhân</MenuItem>
+              <MenuItem onClick={() => {navigate("/order")}}>Danh sách đơn hàng</MenuItem>
+              <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+            </Menu>
+          </div>
+          ) : (
+            <Link to={"/login"} className="link">
               <i class="bi bi-person"></i>
-              {user ? user.name : "Đăng nhập"}
+              {"Đăng nhập"}
             </Link>
+          )}
+
           </div>
 
-          {user ? (
-            <div className="header__logout" title="Đăng xuất">
-              <Button type="submit" onClick={handleLogout}>
-                <i class="bi bi-box-arrow-right"></i>
-              </Button>
-            </div>
-          ) : (
-            ""
-          )}
         </div>
       </div>
     </nav>

@@ -107,8 +107,9 @@ class CartModel
                     $quantity = $quantity + $row["quantity"];
                 }
                 $query = $this->conn->prepare("UPDATE cart_line set total_price = ?,quantity = ? WHERE vp_id = ? AND user_id = ?");
-                $query->bind_param("ssss",$total_price,$quantity,$pid,$usr_id);
+                $query->bind_param("ssss",$total_price,$quantity,$vp_id,$usr_id);
                 $query->execute();
+                $tmp = $query->get_result();
             }
             else{
                 $total_price = $p_price * $quantity;
@@ -153,7 +154,7 @@ class CartModel
 
     public function getItemsByOrder($order_id){
         try{
-            $stmt = $this->conn->prepare("select product_id,name,color,model,size,price,quantity,total_price 
+            $stmt = $this->conn->prepare("select product_id,name,color,model,size,price,quantity,total_price, img_id 
                                             from cart_line cl, variant_product vs, shoe s 
                                             where order_id = ? and cl.vp_id = vs.id and vs.product_id = s.id
                                             order by total_price desc;");

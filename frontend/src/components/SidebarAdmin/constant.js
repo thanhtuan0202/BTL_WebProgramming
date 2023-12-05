@@ -1,6 +1,6 @@
 export const item = [
     {
-      "display_name": "Quản lí doanh thu",
+      "display_name": "Quản lí đơn hàng",
       "route": "/admin",
       "icon": "bx bx-dollar-circle"
     },
