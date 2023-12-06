@@ -209,7 +209,7 @@ class OrderModel{
                 $stmt->bind_param("s",$status);
                 $stmt->execute();
             }
-            return ["success" => "Thay đổi thành công!"];
+            return ["msg" => "Thay đổi thành công!"];
         }
         catch(Exception $e){
             return ["error"=> $e->getMessage()];

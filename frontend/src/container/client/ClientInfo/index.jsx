@@ -51,20 +51,21 @@ const UserProfilePage = () => {
   };
 
   const handleUpdate = () => {
-    // Perform an API request to update user data (replace with your actual update endpoint)
+    console.log(userData);
     axios
-      .put("http://localhost/assignment/backend/index.php/users",JSON.stringify(userData),{
+      .put("http://localhost/assignment/backend/index.php/users",userData,{
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        console.log("data: " + JSON.stringify(response.data.data));
-        setIsEditing(false); // Exit edit mode after successful update
+        console.log("data: " + response.data);
+        setIsEditing(false);
+
       })
       .catch((error) => {
-        console.error("Error updating user data:", error);
+        console.error("Error updating user data:", error.data);
         // Handle error scenarios accordingly
         alert(error.message);
       });

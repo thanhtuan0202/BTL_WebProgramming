@@ -44,8 +44,11 @@ export default function OrderHistory() {
             {orders.order.length > 0 ? (
                 <div>
                     {orders.order.map((item,idx) => (
+                      <div>
                         <OrderItem data={item} key={idx}/>
+                      </div>
                     ))}
+                    
                 </div>
             ) : (
                 "None"

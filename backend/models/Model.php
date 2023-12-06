@@ -117,8 +117,9 @@ class Model
     public function changeUserInfo($user_id, $fullname, $email, $address, $dob, $phone, $gender)
     {
         try {
-            $pre_stmt = $this->conn->prepare("update user set fullname = ?,email=?,dob=?,phone=?,gender=? where id = ?");
-            $pre_stmt->bind_param("sssssss", $fullname, $email, $dob, $phone, $gender, $user_id);
+            $query = "update user set fullname = ?,email=?,dob=?,phone=? where id = $user_id";
+            $pre_stmt = $this->conn->prepare($query);
+            $pre_stmt->bind_param("ssss", $fullname, $email, $dob, $phone);
             $pre_stmt->execute();
             $res = ["success" => "Thay đổi thông tin thành công!"];
             return $res;

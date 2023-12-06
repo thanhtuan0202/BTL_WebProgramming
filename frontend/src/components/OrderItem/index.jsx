@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Grid, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function OrderItem(props) {
   const item = props.data;
-
+  const [popup, setPopup] = useState(false);
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
   const mappingStatus = (status) => {
     if (status === "waiting") {
       return {
@@ -40,22 +42,55 @@ export default function OrderItem(props) {
   });
 
   const handleCancel = () => {
-    const res = axios.patch(`http://localhost/assignment/backend/index.php/orders/${item.id}`, {
+    let data = {
+      status: "delete",
+    };
+    const res = axios.patch(
+      `http://localhost/assignment/backend/index.php/orders/${item.id}`,data,
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
-    )
-    if(res.data.data.error){
-        alert("Error: " + res.data.data.error);
-    }
-    else{
-        alert("Thay đổi thành công!")
-    }
+    );
+    console.log(res);
+    setPopup(false)
+    alert("Thay đổi thành công!");
+    navigate(0);
   };
+
   return (
-    <div style={{ margin: "5px  10px", backgroundColor: "#ffffff", padding: "10px 0"}}>
+    <div
+      style={{
+        margin: "5px  10px",
+        backgroundColor: "#ffffff",
+        padding: "10px 0",
+      }}
+    >
+      {popup ? (
+        <div style={{ position: "absolute", top: 0,left: 0, botton: 0, right: 0, backgroundColor: "rgba(232, 232, 232, 0.7)",display: "flex",
+        alignItems: "center",justifyContent: "center", width: "100%", height: "100%",transition: "all 0.4s",opacity: "1"}}>
+          <div style={{backgroundColor: "white", padding: "50px",}}>
+            <h2 style={{ color: "orange" }}>Xác nhận huỷ?</h2>
+            <Button
+              onClick={() => {
+                setPopup(!popup);
+              }}
+              variant="contained"
+              color="error"
+              style={{ marginRight: "10px" }}
+            >
+              Huỷ
+            </Button>
+            <Button variant="contained" color="error" onClick={handleCancel}>
+              Xác nhận
+            </Button>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
       <div>
         <h4
           style={{
@@ -109,9 +144,20 @@ export default function OrderItem(props) {
         ))}
       </div>
       <div>
-        {item.status === "waiting" || item.status === "on-delivery" || item.status === "confirm" ? (
-          <div>
-            <Button onClick={handleCancel} variant="contained" color="error">Huỷ</Button>
+        {item.status === "waiting" ||
+        item.status === "on-delivery" ||
+        item.status === "confirm" ? (
+          <div >
+            <Button
+              onClick={() => {
+                setPopup(!popup);
+              }}
+              variant={popup ? "disabled" : "text"}
+              color="error"
+              style={{display: "flex"}}
+            >
+              Huỷ đơn hàng
+            </Button>
           </div>
         ) : (
           ""
