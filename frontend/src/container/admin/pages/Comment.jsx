@@ -26,9 +26,7 @@ const useStyles = styled((theme) => ({
 export default function Comments() {
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState([]);
-  const token =
-    "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDEyNzgzNzAsInVzZXJfbmFtZSI6ImpvaG5kb2UiLCJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.KJzBWA-T3YI3fJPXNx0w5Iv9NyQUGXHqcG9uZ3acJ_54MlIZ0T0AUc-9e2aZNB7fvRdlwU8U1uMCG2aiXK5JmQ";
-
+  const token = localStorage.getItem('admin');
   const fetchComment = async (page) => {
     try {
       const res = await axios.get(

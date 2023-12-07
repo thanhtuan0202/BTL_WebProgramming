@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../../../components/Loader";
 import axios from "axios";
-import { Grid, Button, Pagination } from "@mui/material";
+import { Grid, Button, Pagination,TextField, Select, MenuItem} from "@mui/material";
 import { Link } from "react-router-dom";
 import ProductAdmin from "../../../components/Product-admin";
-
 
 
 export default function Products() {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState([]);
-  const token =
-    "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDEyNzgzNzAsInVzZXJfbmFtZSI6ImpvaG5kb2UiLCJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.KJzBWA-T3YI3fJPXNx0w5Iv9NyQUGXHqcG9uZ3acJ_54MlIZ0T0AUc-9e2aZNB7fvRdlwU8U1uMCG2aiXK5JmQ";
-  
+  const token = localStorage.getItem('admin');
+  const [categories, setCategories] = useState(["Tất cả", "Converse", "UltraBoost", "Sandals", "Running", "Giày Adidas"]);
+  const [category, setCategory] = useState(0);
   const fetchProduct = async (page) => {
     try {
       const res_pro = await axios.get(
@@ -52,6 +51,28 @@ export default function Products() {
       </Link>
       <br />
       <br />
+      {/* <Select
+          value={category}
+          label="Loại giày"
+          style={{ minWidth: "200px" }}
+        >
+          {categories.map((item, idx) => (
+            <MenuItem
+              value={idx}
+              onClick={() => {
+                setCategory(idx);
+              }}
+            >
+              {" "}
+              {item}{" "}
+            </MenuItem>
+          ))}
+        </Select>
+        <Button variant="contained" color="primary">
+          Lọc
+        </Button>
+        <br />
+        <br /> */}
       {(product && product.shoes) ? (
         <Grid container spacing={2}>
           {product.shoes.map((item, index) => (

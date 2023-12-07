@@ -18,6 +18,8 @@ import Accounts from "../container/admin/pages/Accounts";
 import Comments from "../container/admin/pages/Comment";
 import UpdateProduct from "../container/admin/pages/UpdateProduct";
 import OrderHistory from "../container/client/OrderHistory";
+import InfoAdmin from "../container/admin/pages/InfoAdmin";
+import LoginAdmin from "../container/admin/pages/LoginAdmin";
 const RouteHome = [
     {
       exact: true,
@@ -51,7 +53,7 @@ const RouteHome = [
     },
     {
       exact: false,
-      path: "Product/detail/:id",
+      path: "product/detail/:id",
       component: DetailProduct,
       layout: "default",
     },    
@@ -118,11 +120,11 @@ const RouteHome = [
     //   path: "/admin/anothersettings",
     //   component: AnotherSettings,
     // },
-    // {
-    //   exact: false,
-    //   path: "/admin/info",
-    //   component: InfoAdmin,
-    // },
+    {
+      exact: false,
+      path: "/admin/info",
+      component: InfoAdmin,
+    },
     // {
     //   exact: false,
     //   path: "/admin/editCategory/:id",
@@ -139,4 +141,11 @@ const RouteHome = [
       component: Accounts,
     },
   ];
-  export {RouteHome, RouteAdmin}
+  const RouteAdminLogin = [
+    {
+      exact: false,
+      path: "/admin/login",
+      component: LoginAdmin,
+    },
+  ];
+  export {RouteHome, RouteAdmin, RouteAdminLogin}

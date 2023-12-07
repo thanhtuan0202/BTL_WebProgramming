@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { RouteHome, RouteAdmin } from "./router";
+import { RouteHome, RouteAdmin,RouteAdminLogin } from "./router";
 import LayoutHome from "./container/client";
 import { Fragment } from "react";
 import LayoutAdmin from "./container/admin";
@@ -57,6 +57,19 @@ function App() {
             );
           })}
         </Routes>
+          <Routes>
+          {RouteAdminLogin.map((item, index) => {
+            const Page = item.component;
+            return (
+              <Route
+                key={index}
+                exact={item.exact}
+                path={item.path}
+                element={<Page />}
+              />
+            );
+          })}
+          </Routes>
       </BrowserRouter>
     </div>
   );

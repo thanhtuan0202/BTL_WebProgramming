@@ -164,6 +164,10 @@ class CartModel
             if($result->num_rows > 0){
                 $res = [];
                 while($row = $result->fetch_assoc()){
+                    include_once("utils/img_process.php");
+                    $img = new Image();
+                    $img_link = $img->getlink($row["img_id"]);
+                    $row["img_id"] = $img_link;
                     array_push($res, $row);
                 }
                 return $res;

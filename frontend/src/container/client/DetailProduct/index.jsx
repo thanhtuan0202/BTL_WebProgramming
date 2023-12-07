@@ -69,6 +69,12 @@ export default function DetailProduct(props) {
       console.error("Error fetching cart:", error);
     }
   }
+
+  var formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'VND'
+  }); 
+
   return (
     <div style={{ minHeight: "505px" }}>
       {loading === false ? (
@@ -109,7 +115,7 @@ export default function DetailProduct(props) {
                     fontSize: "16px",
                   }}
                 >
-                  ID: {product.shoes.id}
+                  Mã sản phẩm: {product.shoes.id}
                 </h4>
                 <br />
                 <p
@@ -119,7 +125,9 @@ export default function DetailProduct(props) {
                     marginBottom: "10px",
                   }}
                 >
-                  {product.shoes.description}
+                  {product.shoes.description ? product.shoes.description.split("\n").map((item) => (
+                    <p style={{marginBottom: "15px"}}>{item}</p>
+                  )) : ""}
                 </p>
                 <h4
                   style={{
@@ -127,7 +135,7 @@ export default function DetailProduct(props) {
                     fontSize: "16px",
                   }}
                 >
-                  Giá: {product.shoes.price} $
+                  Giá: {formatter.format(product.shoes.price) }
                 </h4>
                 <br />
                 <br />

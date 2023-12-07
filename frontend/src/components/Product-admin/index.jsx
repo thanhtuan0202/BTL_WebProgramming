@@ -13,6 +13,8 @@ export default function ProductAdmin(props) {
     style: 'currency',
     currency: 'VND'
   }); 
+
+  
   return (
     <div className="">
       <div className="food-card">

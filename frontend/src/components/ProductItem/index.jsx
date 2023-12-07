@@ -6,7 +6,13 @@ import StarIcon from '@mui/icons-material/Star';
 
 export default function ProductItem(props) {
   const item = props.data;
-  const linkToDetail = `detail/${item.id}`;
+  const linkToDetail = `/product/detail/${item.id}`;
+
+  var formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'VND'
+  }); 
+
   return (
     <div className="">
       <div className="food-card">
@@ -28,24 +34,11 @@ export default function ProductItem(props) {
             <div className="food-card_price" style={{display: "flex", justifyContent: "space-between"}}>
               <div>
                 {" "}
-                Giá:<span> {item.price + " $"}</span>
+                Giá:<span> {formatter.format(item.price) }</span>
               </div>
               <div>
                 <p> {item.star} <StarIcon /> </p> 
               </div>
-            </div>
-
-            <div className="food-card_order-count">
-              <Link to={linkToDetail} key={item.id}>
-                <Button
-                  sx={{ fontSize: 10 }}
-                  style={{ width: 120 }}
-                  color="warning"
-                  variant="contained"
-                >
-                  Thêm sản phẩm
-                </Button>
-              </Link>
             </div>
           </div>
         </div>

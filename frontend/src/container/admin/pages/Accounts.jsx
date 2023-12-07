@@ -5,7 +5,7 @@ export default function Accounts (){
     const [loading, setLoading] = useState(true);
     return loading === true ? <Loader /> : (
         <div>
-            <h1> Order page</h1>
+            <h1> Quản lý tài khoản</h1>
         </div>
     );
 }

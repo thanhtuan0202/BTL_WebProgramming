@@ -196,7 +196,7 @@ class Model
             return ['error' => $e->getMessage()];
         }
     }
-
+    
     public function getAllShoeAdmin($page, $limit, $sortby, $type)
     {
         try {

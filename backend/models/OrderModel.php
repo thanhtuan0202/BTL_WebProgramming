@@ -52,8 +52,8 @@ class OrderModel{
             
             $stmt->execute();
             $result = $stmt->get_result();
+            $res = [];
             if($result->num_rows > 0){
-                $res = [];
                 while($row = $result->fetch_assoc()){
                     array_push($res, 
                     new Order($row["id"],$row["address"],$row["total_price"],$row["create_at"],$row["status"],$row["user_id"],$row["phone_number"],$row["payment_method"],null,
@@ -66,7 +66,10 @@ class OrderModel{
                 );
             }
             else{
-                return [];
+                return array(
+                    'order' => [],
+                    'analyst' => $this->analysis()
+                );
             }
         }
         catch(Exception $e){

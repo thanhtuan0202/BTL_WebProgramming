@@ -73,27 +73,32 @@ const Comment = (props) => {
               {comment.sender_id}
             </Typography>
           </div>
+          <Rating value={comment.star} precision={0.5} disabled />
           <Typography variant="body1" className={classes.commentContent}>
             {comment.content}
           </Typography>
+          
           <Divider />
         </Box>
       ))}
-      <form style={{width: "100%"}}>
+      <form style={{width: "100%",margin: "15px 0"}}>
         <TextField
           label="Add a new comment"
           variant="outlined"
           value={newComment}
           onChange={handleInputChange}
+          multiline
+          rows={5}
+          style={{ width: "50%" }}
           size="large"
         />
         <Rating
           className={classes.rating}
           value={newRating}
-          precision={0.5}
+          precision={1}
           onChange={handleRatingChange}
         />
-        <Button variant="contained" color="primary" onClick={handleAddComment}>
+        <Button variant="contained" color="primary" onClick={handleAddComment} >
           Add Comment
         </Button>
       </form>

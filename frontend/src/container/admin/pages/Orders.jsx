@@ -12,16 +12,57 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
 } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+
+const statusLst = ["waiting", "confirm", "on-delivery", "done", "delete"];
+function SimpleDialog(props) {
+  const { onClose, selectedValue, open } = props;
+
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
+  const handleListItemClick = (value) => {
+    console.log(value);
+    onClose(value);
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle>Chọn trạng thái</DialogTitle>
+      <List sx={{ pt: 0 }}>
+        {statusLst.map((item) => (
+          <ListItem disableGutters key={item}>
+            <ListItemButton onClick={() => handleListItemClick(item)}>
+              <ListItemText primary={item} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Dialog>
+  );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  selectedValue: PropTypes.string.isRequired,
+};
 
 export default function Orders() {
-
-  const [showPopup, setShowPopup] = useState(false);
-
+  const [popup, setPopup] = useState(false);
+  const navigate = useNavigate();
   const togglePopup = () => {
-    setShowPopup(!showPopup);
+    setPopup(!popup);
   };
 
   const [loading, setLoading] = useState(true);
@@ -34,8 +75,7 @@ export default function Orders() {
     delivery: 0,
     sum: 0,
   };
-  const token =
-    "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDEyNzgzNzAsInVzZXJfbmFtZSI6ImpvaG5kb2UiLCJ1c2VyX2lkIjoxLCJyb2xlIjoiYWRtaW4ifQ.KJzBWA-T3YI3fJPXNx0w5Iv9NyQUGXHqcG9uZ3acJ_54MlIZ0T0AUc-9e2aZNB7fvRdlwU8U1uMCG2aiXK5JmQ";
+  const token = localStorage.getItem("admin");
   const fetchOrder = async (page, status = null) => {
     try {
       if (status === null) {
@@ -101,6 +141,32 @@ export default function Orders() {
       };
     }
   };
+  const handlePage = (e, value) => {
+    fetchOrder(value, status);
+  };
+  const [open, setOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(statusLst[1]);
+  const [order, setOrder] = useState(1);
+
+  const handleClose = (value) => {
+    setSelectedValue(value);
+    console.log("order " + order + "with " + value);
+    let data = {
+      status: value
+    }
+    const res = axios.patch(
+      `http://localhost/assignment/backend/index.php/orders/${order}`,data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    setOpen(false);
+    alert("Thay đổi thành công!");
+    navigate(0);
+  };
 
   return loading === true ? (
     <Loader />
@@ -108,18 +174,12 @@ export default function Orders() {
     <div style={{ backgroundColor: "white" }}>
       <h1> Quản lý đơn hàng</h1>
       <br />
-      <div>
-        {showPopup && (
-          <div>
-
-          </div>
-        )}
-      </div>
+      <div>{popup ? <div></div> : ""}</div>
       <Grid container spacing={2}>
         <Grid item xs={3} color="black">
           <Link
             onClick={() => {
-              fetchOrder(1, "waiting"), setStatus("waiting");
+              fetchOrder(1, "waiting").then(setStatus("waiting"));
             }}
           >
             Số đơn chờ duyệt: {orders.analyst.waiting}
@@ -128,7 +188,7 @@ export default function Orders() {
         <Grid item xs={3} color="green">
           <Link
             onClick={() => {
-              fetchOrder(1, "done"), setStatus("done");
+              fetchOrder(1, "done").then(setStatus("done"));
             }}
           >
             Số đơn đã giao: {orders.analyst.done}
@@ -137,7 +197,7 @@ export default function Orders() {
         <Grid item xs={3} color="orange">
           <Link
             onClick={() => {
-              fetchOrder(1, "on-delivery"), setStatus("on-delivery");
+              fetchOrder(1, "on-delivery").then(setStatus("on-delivery"));
             }}
           >
             Số đơn đang giao: {orders.analyst.delivery}
@@ -146,7 +206,7 @@ export default function Orders() {
         <Grid item xs={3} color="red">
           <Link
             onClick={() => {
-              fetchOrder(1, "delete"), setStatus("delete");
+              fetchOrder(1, "delete").then(setStatus("delete"));
             }}
           >
             Số đơn đã huỷ: {orders.analyst.delete}
@@ -160,18 +220,14 @@ export default function Orders() {
         <Grid item xs={12}>
           <Link
             onClick={() => {
-              fetchOrder(1, null), setStatus(null);
+              fetchOrder(1, null).then(setStatus(null));
             }}
           >
             Thiết lập lại
           </Link>
         </Grid>
       </Grid>
-      {/* <br />
-      <div className="topnav__search" style={{border: "1px solid black", width:"50%"}}>
-        <input type="text" placeholder="Tìm kiếm..." />
-        <i className="bx bx-search"></i>
-      </div> */}
+
       <br />
       <TableContainer component={Paper}>
         <Table>
@@ -189,39 +245,49 @@ export default function Orders() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.order.map((item, index) => {
-              const status = mappingStatus(item.status);
-              return (
-                <TableRow>
-                  <TableCell>{item.user_id}</TableCell>
-                  <TableCell>{item.address}</TableCell>
-                  <TableCell>{item.phone_number}</TableCell>
-                  <TableCell>{item.total_price}</TableCell>
-                  <TableCell>{item.payment_method}</TableCell>
-                  <TableCell>{item.create_at}</TableCell>
-                  <TableCell>{item.delivery_time}</TableCell>
-                  <TableCell style={{ color: `${status.color}` }}>
-                    {status.msg}
-                  </TableCell>
-                  <TableCell>
-                    {item.status == "done" ? (
-                      " "
-                    ) : (
-                      <div>
-                        <Link onClick={togglePopup}
-                        >
-                          <EditNoteIcon />
-                        </Link>
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {orders && orders.order.length > 0 ? (
+              <>
+                {orders.order.map((item, index) => {
+                  const status = mappingStatus(item.status);
+                  return (
+                    <TableRow>
+                      <TableCell>{item.user_id}</TableCell>
+                      <TableCell>{item.address}</TableCell>
+                      <TableCell>{item.phone_number}</TableCell>
+                      <TableCell>{item.total_price}</TableCell>
+                      <TableCell>{item.payment_method}</TableCell>
+                      <TableCell>{item.create_at}</TableCell>
+                      <TableCell>{item.delivery_time}</TableCell>
+                      <TableCell style={{ color: `${status.color}` }}>
+                        {status.msg}
+                      </TableCell>
+                      <TableCell>
+                        {item.status == "done" ? (
+                          " "
+                        ) : (
+                          <div>
+                            <Link onClick={ () => {setOpen(true); setOrder(item.id)}}>
+                              <EditNoteIcon />
+                            </Link>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </>
+            ) : (
+              ""
+            )}
           </TableBody>
         </Table>
       </TableContainer>
       <br />
+      <SimpleDialog
+        selectedValue={selectedValue}
+        open={open}
+        onClose={handleClose}
+      />
       <Pagination count={10} onChange={handlePage} />
     </div>
   );

@@ -1,8 +1,10 @@
 import React from "react";
 import SidebarAdmin from "../../components/SidebarAdmin";
 import Topnav from "../../components/TopNavAdmin/TopNav";
+import { Navigate } from "react-router-dom";
 
 function LayoutAdmin(props) {
+  if (!localStorage.getItem("admin")) return <Navigate to="/admin/login" />;
   return (
     <div className="App">
       <SidebarAdmin />

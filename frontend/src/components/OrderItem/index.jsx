@@ -113,7 +113,7 @@ export default function OrderItem(props) {
         </h5>
       </div>
       <div>
-        {item.items.map((product, idx) => (
+        { item && item.items ? item.items.map((product, idx) => (
           <Grid container spacing={2}>
             <Grid item xs={2}>
               <img src={product.img_id} alt="img" style={{ maxWidth: 240 }} />
@@ -141,7 +141,7 @@ export default function OrderItem(props) {
             </Grid>
             <Grid item xs={6}></Grid>
           </Grid>
-        ))}
+        )) : ""}
       </div>
       <div>
         {item.status === "waiting" ||
